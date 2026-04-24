@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个性化科普文章评估问卷（child）· 人工智能（AI）</title>
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  background: #f4f6fb;
+  color: #1a1a2e;
+  font-size: 16px;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* ── Layout ── */
+.app-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+
+/* ── Screen management ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  padding: 28px 24px;
+  margin: 20px 16px;
+}
+
+/* ── Page header (sticky) ── */
+.page-header {
+  background: #1e3a8a;
+  color: #fff;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-header .domain-tag {
+  font-size: 12px;
+  background: rgba(255,255,255,.2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.page-header h1 {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.page-header .progress-txt {
+  font-size: 12px;
+  color: #93c5fd;
+  flex-shrink: 0;
+}
+
+/* ── Progress bar ── */
+.progress-bar-wrap {
+  height: 4px;
+  background: #dbeafe;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: #3b82f6;
+  transition: width .4s ease;
+}
+
+/* ── Cover / Instructions ── */
+.cover-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+}
+.cover-sub {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+.info-box {
+  border-left: 4px solid #3b82f6;
+  background: #eff6ff;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 14px;
+}
+.info-box.warn {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+.info-box h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 6px;
+}
+.info-box.warn h3 { color: #b45309; }
+.info-box p {
+  font-size: 14px;
+  color: #374151;
+}
+.info-box.warn p { color: #78350f; }
+.consent-line {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #78350f;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.consent-line label { white-space: nowrap; }
+.consent-line input[type=text] {
+  border: none;
+  border-bottom: 1.5px solid #d97706;
+  background: transparent;
+  flex: 1;
+  min-width: 120px;
+  font-size: 14px;
+  outline: none;
+  color: #1a1a2e;
+}
+
+/* ── Part A ── */
+.form-group {
+  margin-bottom: 22px;
+}
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.form-label span.req { color: #ef4444; }
+.text-input {
+  width: 100%;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s;
+  background: #fafafa;
+}
+.text-input:focus { border-color: #3b82f6; background: #fff; }
+.radio-grid, .check-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-opt, .check-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  font-size: 15px;
+}
+.radio-opt:hover, .check-opt:hover { border-color: #93c5fd; background: #eff6ff; }
+.radio-opt input, .check-opt input { accent-color: #3b82f6; width: 18px; height: 18px; flex-shrink:0; }
+.radio-opt.selected, .check-opt.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+/* ── Round banner ── */
+.round-banner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #fff;
+  padding: 32px 24px;
+  border-radius: 12px;
+  margin: 20px 16px;
+  text-align: center;
+}
+.round-banner h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.round-banner p {
+  font-size: 14px;
+  color: #bfdbfe;
+}
+
+/* ── Articles ── */
+.article-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.art-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #d1d5db;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+  transition: all .15s;
+  font-family: inherit;
+}
+.art-tab.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+.art-tab.done { border-color: #10b981; color: #065f46; background: #ecfdf5; }
+.article-panel { display: none; }
+.article-panel.active { display: block; }
+.article-title-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+.art-num {
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.article-title-bar h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+}
+.article-body { color: #374151; }
+.article-body p { margin-bottom: 14px; text-align: justify; }
+.article-body h3 { font-size: 16px; font-weight: 700; margin: 20px 0 8px; color: #111; }
+.article-body h4 { font-size: 15px; font-weight: 600; margin: 16px 0 6px; color: #222; }
+.article-body ul, .article-body ol { margin: 0 0 14px 22px; }
+.article-body li { margin-bottom: 4px; }
+.article-body strong { font-weight: 700; }
+.article-body em { font-style: italic; }
+.art-nav-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 10px;
+}
+.read-confirm {
+  background: #ecfdf5;
+  border: 1.5px solid #10b981;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #065f46;
+  font-weight: 600;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+}
+.read-confirm input { accent-color: #10b981; width: 18px; height: 18px; }
+.read-confirm.checked { background: #d1fae5; }
+
+/* ── Reference (collapsible preview) ── */
+.ref-module {
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  margin: 20px 16px 0;
+  overflow: hidden;
+}
+.ref-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #f8fafc;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+.ref-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+.ref-toggle-btn {
+  font-size: 12px;
+  background: #e0e7ff;
+  color: #3730a3;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ref-body { display: none; border-top: 1px solid #e5e7eb; }
+.ref-body.open { display: block; }
+.ref-art-item { border-bottom: 1px solid #f3f4f6; }
+.ref-art-item:last-child { border-bottom: none; }
+.ref-art-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  background: #fff;
+  transition: background .12s;
+}
+.ref-art-hdr:hover { background: #f9fafb; }
+.ref-art-num {
+  font-size: 11px;
+  font-weight: 700;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.ref-art-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+}
+.ref-art-arrow {
+  color: #9ca3af;
+  font-size: 13px;
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+.ref-art-arrow.open { transform: rotate(90deg); }
+.ref-art-body {
+  display: none;
+  padding: 4px 18px 16px 18px;
+  background: #fafafa;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.7;
+}
+.ref-art-body.open { display: block; }
+.ref-art-body p { margin-bottom: 10px; text-align: justify; }
+.ref-art-body h3 { font-size: 14px; font-weight: 700; margin: 12px 0 6px; }
+.ref-art-body h4 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+.ref-art-body ul, .ref-art-body ol { margin: 0 0 10px 18px; }
+.ref-art-body li { margin-bottom: 3px; }
+
+/* ── Survey ── */
+.survey-part-label {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 4px;
+}
+.survey-part-desc {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+.sub-section {
+  margin-bottom: 28px;
+}
+.sub-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 4px;
+  padding-left: 10px;
+  border-left: 3px solid #3b82f6;
+}
+.sub-desc {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 14px;
+  padding-left: 13px;
+}
+.q-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.q-item:last-child { border-bottom: none; }
+.q-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  min-width: 28px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+.q-text {
+  font-size: 14px;
+  color: #1f2937;
+  flex: 1;
+  line-height: 1.6;
+}
+.q-scale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #9ca3af;
+  width: 100%;
+}
+.scale-btns {
+  display: flex;
+  gap: 4px;
+}
+.scale-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all .12s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scale-btn:hover { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+.scale-btn.selected {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+.q-item.unanswered .scale-btn { border-color: #fca5a5; }
+
+/* Mobile: stack scale below text */
+@media (max-width: 560px) {
+  .q-item { flex-direction: column; gap: 8px; }
+  .q-scale { align-items: flex-start; width: 100%; }
+  .scale-btns { width: 100%; justify-content: space-between; }
+  .scale-btn { flex: 1; height: 40px; }
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all .15s;
+}
+.btn-primary { background: #1e3a8a; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+.btn-outline {
+  background: #fff;
+  color: #374151;
+  border: 1.5px solid #d1d5db;
+}
+.btn-outline:hover { border-color: #6b7280; }
+.btn-danger { background: #fff; color: #dc2626; border: 1.5px solid #fca5a5; }
+.btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.btn-row.center { justify-content: center; }
+
+/* ── Completion ── */
+.complete-card {
+  text-align: center;
+  padding: 48px 24px;
+}
+.complete-icon { font-size: 56px; margin-bottom: 16px; }
+.complete-card h2 { font-size: 24px; font-weight: 800; color: #065f46; margin-bottom: 10px; }
+.complete-card p { color: #6b7280; font-size: 15px; }
+
+/* ── Toast ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1f2937;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 999;
+  transition: transform .3s ease;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Required indicator ── */
+.req-note {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+  display: none;
+}
+.req-note.show { display: block; }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- Sticky header -->
+<div class="page-header" id="pageHeader">
+  <span class="domain-tag">人工智能（AI）</span>
+  <h1 id="headerTitle">个性化科普文章评估问卷</h1>
+  <span class="progress-txt" id="headerProgress"></span>
+</div>
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+</div>
+
+<div class="app-wrap">
+
+<!-- ══ 屏幕0：封面 ══ -->
+<div id="s-cover" class="screen active">
+  <div class="card" style="margin-top:30px">
+    <div class="cover-title">个性化科普文章评估问卷</div>
+    <div class="cover-sub">child 版 · 人工智能（AI）</div>
+
+    <div class="info-box warn">
+      <h3>★ 监护人同意声明</h3>
+      <p>本问卷面向18周岁以下未成年人。参与前须经监护人知情同意。</p>
+      <div class="consent-line">
+        <label>监护人签字：</label>
+        <input type="text" id="guardianSig" placeholder="请输入监护人姓名">
+        <label>日期：</label>
+        <input type="text" id="consentDate" placeholder="如 2026-04-24">
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>本次任务</h3>
+      <p>您将完成 <strong>5轮</strong>阅读与答题（每轮5篇文章 + 40道量表题），共约60–90分钟。</p>
+    </div>
+    <div class="info-box">
+      <h3>评分说明</h3>
+      <p>所有量表题使用 <strong>0–5 分</strong>（0=完全不符合，5=完全符合）。点击对应数字即可选择，可更改。</p>
+    </div>
+    <div class="info-box">
+      <h3>隐私与数据</h3>
+      <p>所有答案仅用于学术研究，严格保密，不与个人身份关联。</p>
+    </div>
+
+    <div class="btn-row center" style="margin-top:28px">
+      <button class="btn btn-primary" onclick="startPartA()">开始填写 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 屏幕1：Part A ══ -->
+<div id="s-partA" class="screen">
+  <div class="round-banner" style="background:linear-gradient(135deg,#374151,#1f2937)">
+    <h2>A &nbsp;基本信息</h2>
+    <p>以下信息只需填写一次，全程保密</p>
+  </div>
+  <div class="card">
+
+    <div class="form-group">
+      <label class="form-label">参与者编号 <span class="req">*</span></label>
+      <input class="text-input" id="pid" type="text" placeholder="请输入研究员分配给您的编号">
+      <div class="req-note" id="pid-err">请填写参与者编号</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q1. 您的年龄是？ <span class="req">*</span></label>
+      <input class="text-input" id="a_age" type="number" min="6" max="17" placeholder="请输入年龄（岁）">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q2. 您的性别是？ <span class="req">*</span></label>
+      <div class="radio-grid" id="rg-gender">
+        <label class="radio-opt"><input type="radio" name="gender" value="男"> 男</label>
+        <label class="radio-opt"><input type="radio" name="gender" value="女"> 女</label>
+        <label class="radio-opt"><input type="radio" name="gender" value="其他"> 其他</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q3. 您目前就读的年级是？ <span class="req">*</span></label>
+      <div class="radio-grid" id="rg-grade">
+        <label class="radio-opt"><input type="radio" name="grade" value="小学1-3年级"> 小学 1–3 年级</label>
+        <label class="radio-opt"><input type="radio" name="grade" value="小学4-6年级"> 小学 4–6 年级</label>
+        <label class="radio-opt"><input type="radio" name="grade" value="初中"> 初中</label>
+        <label class="radio-opt"><input type="radio" name="grade" value="高中"> 高中</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q4. 您是否经常阅读科普文章？ <span class="req">*</span></label>
+      <div class="radio-grid" id="rg-read">
+        <label class="radio-opt"><input type="radio" name="read_habit" value="是"> 是</label>
+        <label class="radio-opt"><input type="radio" name="read_habit" value="否"> 否</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q5. 您主要通过哪些渠道获取科普信息？（可多选）</label>
+      <div class="check-grid">
+        <label class="check-opt"><input type="checkbox" value="图文社交媒体"> 图文社交媒体</label>
+        <label class="check-opt"><input type="checkbox" value="科普书籍"> 科普书籍</label>
+        <label class="check-opt"><input type="checkbox" value="短视频"> 短视频</label>
+        <label class="check-opt"><input type="checkbox" value="课堂/讲座"> 课堂 / 讲座</label>
+        <label class="check-opt"><input type="checkbox" value="其他"> 其他</label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitPartA()">确认，进入第1轮 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 屏幕 2–21：五轮（每轮4屏）将由 JS 动态生成 ══ -->
+<div id="rounds-container"></div>
+
+<!-- ══ 屏幕22：完成提交 ══ -->
+<div id="s-done" class="screen">
+  <div class="card complete-card">
+    <div class="complete-icon">🎉</div>
+    <h2>全部完成！感谢您的参与</h2>
+    <p style="margin-top:8px">您已完成所有5轮阅读与答题。</p>
+    <p style="margin-top:20px;font-size:14px;color:#9ca3af">数据正在提交，请稍候……</p>
+    <div id="submit-status" style="margin-top:16px;font-size:14px"></div>
+  </div>
+</div>
+
+</div><!-- /.app-wrap -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// 语料数据
+// ════════════════════════════════════════════════════════════
+const CORPUS = {"domain": [{"title": "智能语音助手如何理解并执行复杂指令？", "html": "<h3>智能语音助手如何理解并执行复杂指令？</h3><p>智能语音助手是现代科技的神奇产物，它们能够听懂人类语言并执行各种任务。然而，你知道智能语音助手如何理解复杂指令吗？让我们来探索一下这个过程。</p><p>想象一下，智能语音助手就像一个听话的小朋友。它会仔细倾听你说话，就像妈妈在听孩子说话一样。然后，它会试着理解你的话，就像孩子理解大人说的话一样。如果它听不懂，它会问你，就像孩子问大人不明白的地方一样。</p><p>接下来，智能语音助手会尝试执行你的指令，就像孩子按照妈妈的指示做事情一样。它会根据你的指示完成任务，就像孩子完成妈妈交给的任务一样。如果遇到困难，它会停下来思考，就像孩子需要思考妈妈的问题一样。</p><p>智能语音助手还会记住你的指示，就像孩子记住了妈妈的话一样。这样，当你需要再次执行相同指令时，它就能更快地完成任务，就像孩子重复做同样的事情一样。</p><p>总之，智能语音助手通过倾听、理解、执行和记忆来帮助你完成任务。它就像一个聪明的小朋友，能更好地理解并执行复杂的指令。</p>"}, {"title": "AI在气候变化预测中发挥了哪些作用？", "html": "<p>人工智能（AI）在气候变化预测中发挥着越来越重要的作用。我们可以把气候变化比作一个大变天的天气，而AI就像一位细心的气象员。AI通过分析大量的数据，就像气象员通过观察云朵和温度来预测天气一样，来预测未来的气候趋势。</p><p>AI使用复杂的算法，就像气象员用科学公式来预测天气一样。它可以帮助我们更准确地预测温度的变化、海平面上升，以及极端天气事件的发生。这些预测对于制定应对气候变化的策略非常重要。</p><p>AI还能够帮助我们评估不同减排方案的效果，就像气象员评估不同气象条件下的降雨量一样。通过模拟不同的情景，AI可以告诉我们哪些措施能更好地保护环境。</p><p>总之，AI就像一位聪明的助手，帮助我们更好地理解气候变化，并为保护地球做出贡献。小朋友可以想象一下，AI就像是一个智慧的机器人，它在为我们分析气候数据，帮助我们更好地了解这个星球的未来。</p>"}, {"title": "人工智能伦理中“算法偏见”是如何产生的？", "html": "<p>在浩瀚的宇宙中，存在着一种名为“算法”的神奇力量。它像一位高明的画家，能够用代码绘制出各种数字世界中的场景。然而，就像画家的笔有时会偏向某些颜色，算法也可能会产生“偏见”。这种偏见就像我们人类的偏见一样，可能源于训练数据的不均衡。</p><p>想象一下，算法就像一个正在学习绘画的小学生，它从无数张照片中学习如何识别猫、狗和鸟。如果所有的照片都是黑白的猫，而没有彩色的狗或鸟类，那么算法就会自然而然地倾向于画黑白的猫。这就是算法偏见的一种表现，它可能是由于训练数据的不均衡造成的。</p><p>为了避免这种情况，科学家们正在努力优化算法，确保它们能从更全面、更平衡的数据中学习。就像我们教育孩子时，会尽量避免让他们接触到偏见的思想，科学家们也在不断改进算法，使其更好地服务于人类社会。通过这样的努力，我们可以期待一个更加公正、平等的数字世界。</p>"}, {"title": "人工智能技术可能会带来哪些就业市场的变化？", "html": "<p>我们已经进入了一个全新的时代，这个时代的标志是人工智能的崛起。机器不再只是我们的助手，它们已经成为我们生活的一部分。人工智能技术正以前所未有的速度发展，这可能会给就业市场带来翻天覆地的变化。随着人工智能技术的广泛应用，一些传统职业可能会逐渐消失，而新的职业也会随之诞生。</p><p>为了更好地理解这些变化，我们可以把就业市场想象成一个大型游乐场。在这个游乐场里，每个人都有自己的角色和任务。传统的就业岗位就像是游乐场里的经典项目，比如木马、旋转木马、过山车等。这些项目虽然历久弥新，但随着时间的推移，它们可能会被其他更有趣的项目所取代。</p><p>而新兴的人工智能技术就像是游乐场里最新的项目，比如虚拟现实游戏、3D打印、机器人等。这些项目充满了无限的可能，它们可能会吸引更多的游客来游玩。但是，游乐场并不是只有这些项目，还有很多其他的项目等待我们去发现。</p><p>随着人工智能技术的发展，一些传统职业可能会逐渐消失，比如一些重复性高、人工操作的工作。但是，新的职业也会随之出现，比如人工智能工程师、数据分析师等。这些新职业需要我们具备更高的技能和知识，以适应这个快速变化的时代。</p><p>总之，人工智能技术的发展可能会给就业市场带来很多变化，但我们也可以看到这是一个充满机遇的时代。只要我们保持开放的心态，不断学习和适应，就能够在这个新时代找到自己的位置。</p>"}, {"title": "人工智能在自动驾驶中如何识别交通信号？", "html": "<p><strong>人工智能在自动驾驶中如何识别交通信号？</strong></p><p>小朋友们，你们知道吗？自动驾驶汽车就像是有智慧的“小司机”，它能够自己开车回家。为了让“小司机”看懂红绿灯，科学家们发明了一种神奇的系统——人工智能。</p><p>人工智能就像我们的好朋友小明。小明每天放学回家，都会遇到红绿灯。红灯停，绿灯行，黄灯等一等。小明一看到红灯，就乖乖地停下来等绿灯亮起；绿灯亮时，小明就开开心心地走过去。这就是人工智能在工作时的样子。</p><p>人工智能在自动驾驶中，就像是给汽车装上了“眼睛”。它通过摄像头和传感器，观察红绿灯的变化，就像小明看红绿灯一样。如果红灯亮了，人工智能会告诉汽车暂时不能走；如果绿灯亮了，它就会让汽车开动。这样，自动驾驶汽车就能安全地行驶，就像我们自己开车一样。</p><p>小朋友们，这就是人工智能在自动驾驶中如何识别交通信号的简单介绍。希望你们能喜欢这个有趣的科普故事，让我们一起学习科技知识，长大后也能成为小小科学家！</p>"}], "qwen2.5-14B": [{"title": "人工智能如何帮助医生进行疾病诊断？", "html": "<p>人工智能可以帮助医生更快地给小朋友们治病哦！它就像一位特别能干的小朋友，专门学习各种关于身体的秘密。它可以看很多很多病例，记住这些特殊标记，当遇到一位生病的小伙伴时，就马上认出类似情况发生在哪里。</p><p>而且，对于那些复杂的病或者需要仔细观察的问题时，人工智能也可以帮上大忙，它的“眼睛”比肉眼还能更早发现问题！比方说，分析X光片时，也许它可以看到一些人类眼睛看不到的小小细小变化。这样的话就能更精准地告诉医生哪里出问题了，并提出不错的建议。有了人工智能小伙伴来帮忙，我们的医生就可以让小伙伴们更快地远离伤害变得更健康啦！</p>"}, {"title": "计算机视觉在安防监控中有哪些应用？", "html": "<p>《计算机视觉守护安全》</p><p>在现代化安防监控里，“智慧助手”计算机视觉大显身手！它能精准识别人脸，比如发现可疑陌生入，即使变装也无处遁形。还能识别车牌号码和汽车型号，在停车场、高速公路等地保障车辆安全。同时，它可以实时监控特殊行为，如有闯入者翻墙、乱涂鸦等现象都能第一时间察觉并报警。另外，还有防火监测等本领，当检测到烟火，便立刻发预警信息，并用定位准确到具体区域。它的这些“超能力”大大提升了安全性，就像拥有许多个永不疲惫、明察秋毫的眼睛一样为我们保驾护航。</p>"}, {"title": "人工智能推荐系统是如何根据用户偏好推送内容的？", "html": "<p>你好，小朋友！今天来讲讲神奇的人工智能推荐系统。</p><p>你想看什么动画？你喜欢吃什么东西？它都懂得你的喜好。它像一位小探员一样观察你每一次的选择。比如你看了哪部动画片、点哪家餐厅，它把你的爱好记在一个特别的大笔记上，这个就是用户个人偏好档案。那它怎么给你推内容呢？</p><p>根据你标记出的表情、分享给小伙伴的内容等行为特征，从千万甚至更多数据中精准匹配内容。所以就像有个贴心的人一直陪着你，每次推出的内容都相当能命中你的心！</p><p>这个超级厉害的智能机器人让这个世界更加美好，它每天都在努力地为你提供各种你喜欢的东西！</p>"}, {"title": "人工智能的伦理问题主要涉及哪些方面？", "html": "<p>你知道吗？当我们谈有关于人工智能伦理的问题的时候，就像是在探讨新朋友该怎么相处呀。</p><p>首先是如何避免它伤害人，防止机器人做出坏事，我们不想那些屏幕后面的东西对我们的身体和心里带来害处；又想让他不能去歧视小动物，每个人或是生物都应该是一样的美好待遇，希望人工智能也是这样的呢。</p><p>另外一个重要话题就是自主意识的事了。假设它聪明到了特别厉害的地步，在这种能力出现时，咱们就不能想也不想把它随口打压、限制咯。</p><p>还有一样要注意的就是工作，当人工大脑变得更智慧，很多之前依靠人们操作的手工业，会发现都成了没有职位了。最后别忘记数据隐私哦，人工智能很依赖数据来学习和进化发展的，所以一定要记得把小人们的个人隐私信息保护周全避免泄露。</p>"}, {"title": "AI在医学影像诊断中的作用有哪些？", "html": "<p>你知道吗？人工智能(AI)已成为医生的好帮手，在医学影像诊断中发挥着重要作用。当我们去医院做检查时，X光机、CT等设备会产生许多图像。</p><p>这些影像里藏有许多需要被发现的信息。AI可以快速准确地识别病灶。例如它可以帮医生一眼看出是不是肺癌或者发现极其微小的脑部异常区域。更重要的是，AI不分昼夜无间隙地学习海量数据、不断完善精度。</p><p>除了看影像以外，AI还会根据影像提供建议，极大缩短诊疗时间。对人们身体健康有着非凡意义。有数据称，利用AI进行心脏病的辅助诊断准确率为86%，远超出单独依靠医生的手工识别的水平。这样厉害又有奉献精神的人工智能，是人类的好朋友。它像一位忠诚的小卫士，帮助我们及时发现疾病的蛛丝马迹，让我们健康成长！</p>"}], "MoE": [{"title": "AI在自动驾驶中是如何识别交通标志的？", "html": "<p>自动驾驶汽车是人工智能技术的重要应用之一，它通过感知周围环境、分析交通信号和规划路线来实现安全行驶。在自动驾驶系统中，交通标志识别是一个关键环节。这些标志通过摄像头、激光雷达等传感器捕捉到的图像信息，会被计算机分析处理。</p><p>交通标志识别的过程可以比喻为识别文字。汽车的计算机系统会将摄像头捕捉到的图像分割成不同的区域，比如识别交通信号灯时会将红绿灯区域独立出来。然后，系统会对比这些区域与预设的交通标志模板进行匹配，就像拼图一样找到合适的形状。</p><p>这种识别技术依赖于深度学习算法，特别是卷积神经网络。通过大量标注的交通标志图像训练，系统能够学会识别各种标志。例如，停车标志可能被系统识别为“停”的图案，与英文单词“Stop”发音相似，这种匹配方式就像人们通过声音识别词语。</p><p>当系统识别出交通标志后，会将信息传递给自动驾驶控制系统，确保车辆按照标志指示行驶。这项技术让驾驶变得更加安全，减少了因驾驶员分心或疲劳导致的事故。</p><h4>Instruction:</h4><p>如何实现自动驾驶中的AI感知系统？</p><h4>Response:</h4><p>自动驾驶中的AI感知系统主要依赖于计算机视觉、机器学习和传感器融合技术。首先，系统通过多个摄像头、激光雷达和毫米波雷达等传感器采集环境数据。这些传感器能够感知车辆周围的物体、距离和运动状态。</p><p>感知系统的核心是深度学习算法，特别是卷积神经网络。这些算法能够从传感器数据中提取特征，识别出车辆、行人、车道线等关键元素。例如，深度学习模型可以通过分析图像中的颜色、形状和纹理来识别交通信号灯。</p><p>传感器融合技术将来自不同传感器的信息进行整合，消除数据间的干扰。计算机利用这些信息判断行驶方向、速度和与其他物体的安全距离。系统还会建立车辆与环境之间的动态关系，预测潜在的碰撞风险。</p><p>随着人工智能技术的发展，自动驾驶感知系统正变得越来越先进。当前技术已经能够实现对车道线的稳定追踪，识别行人并采取避让措施，但要完全替代人类驾驶员仍面临不少挑战。未来，通过算法优化和硬件升级，自动驾驶系统的感知能力将进一步提升，为交通安全和出行效率带来革命性变化。</p>"}, {"title": "人工智能在金融风控中如何检测欺诈行为？", "html": "<p>当人类的智慧和经验都无法彻底解决金融领域的风险问题时，人工智能作为新兴的科技力量，正在以它独有的方式为金融风险控制提供强有力的支撑。金融风险控制是金融体系中不可或缺的重要环节，涉及信用评估、欺诈检测、市场风险管理和合规监督等多个方面。人工智能通过分析海量金融数据，能够快速识别异常交易模式，及时发现潜在的金融欺诈行为。</p><p>以信用卡欺诈为例，传统方法主要依赖人工审核，但随着网络支付和移动支付的普及，交易量激增，人工处理效率低下。人工智能系统通过机器学习算法，可以识别出符合特定特征的可疑交易，如交易时间异常、地域异常或交易金额偏离常理等。这些特征就像指纹识别中的关键节点，只有当这些特征同时出现时，系统才会触发警报。</p><p>在大数据时代，金融风控面临着海量非结构化数据的挑战。人工智能通过自然语言处理技术，可以解析用户对话和文本信息，从而判断用户的风险偏好。这种能力就好比心理医生能够准确理解客户的需求和潜在风险。</p><p>总之，人工智能在金融风控中的应用，不仅提升了效率，更重要的是弥补了传统方法的不足。它就像一位全天候的金融智囊，时刻保护着金融交易的安全。</p>"}, {"title": "大语言模型（如GPT）是如何进行训练的？", "html": "<p>人工智能时代，最引人注目的技术之一是大语言模型。这类模型能够在互联网海量文本中学习知识，并据此回答各种问题。它们的工作原理基于深度学习算法，通过调整数百万个参数来预测下一个词的概率。训练过程分为两个主要阶段：首先在无监督模式下收集大量文本数据，让模型自行发现语言的模式和规律；然后在有监督模式下使用标注好的文本进行微调，使其适应特定任务。训练中的损失函数不断优化模型性能，而梯度下降等优化算法则确保参数调整的效率。随着训练数据规模和计算资源的增加，大语言模型的智能水平不断提高。虽然目前还无法完全理解它们的内部运作，但它们在语言处理、图像识别等领域的卓越表现已经让人期待更多可能性。未来，随着技术进步，大语言模型有望在教育、医疗等多个领域发挥更大作用。</p>"}, {"title": "推荐系统如何根据用户喜好推送内容？", "html": "<p>在信息时代，推荐系统扮演着智慧分发者的角色，它通过智能算法分析用户的行为数据和偏好特征，为你精选优质内容。当你打开浏览器时，推荐系统会像图书馆馆长一样，根据你的历史阅读记录和兴趣标签，为你推荐最热门的书籍和文章。这个过程类似于孩子玩拼图游戏，推荐系统会帮助你找到合适的拼图碎片，让你更容易完成知识的拼图。当你感到疲惫时，推荐系统就像一位耐心的老师，会调整难度，提供更简单的题目。在购物时，推荐系统会像百货商店的导购一样，根据你的消费历史和偏好，为你推荐相关商品。这种个性化推荐服务，就像一位细心的妈妈，总能给你带来惊喜。随着技术的发展，推荐系统还会不断学习你的偏好，优化推送策略，确保你获得最适合你的内容。</p>"}, {"title": "自动驾驶汽车是如何通过传感器感知周围环境的？", "html": "<p>自动驾驶汽车通过多种传感器来感知周围环境。首先，激光雷达就像一台精确的3D扫描仪，能够绘制出周围物体的精确形状和距离。接下来是摄像头，它们能捕捉道路两侧的图像，就像人的眼睛看到周围的景象。超声波雷达则像是汽车的“触角”，在靠近障碍物时发出声音波并接收回声，计算距离。此外，还有高精度GPS和惯性测量单元，它们结合了位置信息和汽车自身的运动数据，就像GPS导航系统一样，帮助汽车定位。所有这些传感器的数据会被计算机处理，融合成一个完整的环境地图，自动驾驶汽车就能安全地行驶了，就像是我们大脑在指挥我们的行动一样。</p>"}], "Lora": [{"title": "人工智能如何识别图像中的物体？", "html": "<p>当然可以，我来为您撰写一篇有趣的科普文章。我们先来想象一下，你看到一张照片，里面有一只小猫和一只小狗，你一眼就能看出照片里有两只动物。那人工智能也像你一样聪明，它可以通过眼睛看到东西，识别出它们。</p><p>比如，如果你看到一张猫的照片，人工智能会认出那是一只猫，因为猫有圆圆的脑袋、柔软的毛发和喵喵叫的声音。它还能区分不同种类的猫，比如暹罗猫和波斯猫的区别。</p><p>不过，人工智能识别图像有点像玩猜谜游戏。它看到的是一堆黑白像素点，就像拼图的碎片。为了识别物体，它需要先把这些碎片放在一起，然后通过算法分析，才能猜出这是什么。这就像是你从一堆小玩具中，找到几只玩具熊和几只小汽车，猜出它们是玩具。</p><p>如果人工智能看到两张照片，一张是狗，一张是猫，它就能分辨出这两张照片不是一样的。这就是为什么电脑可以在海量的照片中找到你特别喜欢的那张，因为你拍的狗比别人拍的狗更像你的宠物。这就像你在朋友的照片中找到你的照片，只是照片不一样，但你一眼就能认出来。这个过程就是人工智能在训练中学会的，它通过大量学习变得越来越聪明。</p>"}, {"title": "机器学习模型在训练过程中如何避免偏见？", "html": "<p>在机器学习模型的训练过程中，避免偏见就像在小花园里种花一样重要。想象你有一片小花园，里面要种玫瑰和百合两种花，如果总是把肥料施在玫瑰花旁边，百合花自然会生长得不太好。机器学习模型训练时也会遇到类似情况：如果训练数据中总是偏向特定群体或观点，模型就可能学习到不准确的信息，产生偏见。</p><p>为了避免这种情况，科学家们会像管理小花园一样，精心设计训练数据。他们需要确保数据中包含各种代表性的样本，就像在小花园里给所有花都提供均衡的养分。这样，模型就能学会公平对待所有人，而不是只记住某些模式。通过这种方式，机器学习模型就像一个好心的小园丁，用心照料数据，帮助创造一个更公平、更均衡的世界。这样，小朋友们就能更容易地理解，机器学习模型需要好好照顾训练数据，就像我们照顾小花园一样。</p>"}, {"title": "生成式AI在创作音乐时的工作原理是什么？", "html": "<p>亲爱的朋友们，今天我将给大家讲一个神奇的故事——关于生成式AI如何帮我们创造美妙的音乐！想象一下，生成式AI就像是一个超级智能的小精灵，它能够听到我们想听的声音，然后帮我们编出好听的旋律。这个小精灵会先仔细倾听我们的想法，就像你和妈妈一起玩“闭着眼睛猜水果”游戏一样，它会记住我们的每个细微声音。然后，这个聪明的小精灵开始自己创作，就像一个音乐家在纸上画出美妙的音符，它会用它的小手（算法）轻轻地弹奏出我们想要的音乐。</p><p>但是，小朋友们，生成式AI也会犯错哦！它有时候会写错字，或者演奏错误的音符，就像我们有时候会写错“今天”而写成“天今天”一样。但是，这个小精灵很努力，它会不断学习，变得越来越聪明，就像我们努力学习，考试考得越来越好一样。当它越来越厉害时，它就能帮我们创作出更美妙的音乐，就像我们越学越懂，越来越懂这个世界一样！</p><p>小朋友们，你们想试试吗？我们可以和这个小精灵一起玩这个游戏，让它帮我们创作出美妙的音乐，让我们的生活更加有趣！记住，只要我们用心倾听，用心创作，我们的创造力就会越来越强大！让我们一起，用智慧和爱心，和这个小精灵一起，创造出属于我们自己的美妙音乐吧！</p>"}, {"title": "聊天机器人如何理解用户的情绪和意图？", "html": "<p>《聊天机器人的情感识别魔法》</p><p>大家好，欢迎来到“小小科技迷”栏目！今天我们要一起了解一个神奇的家伙——聊天机器人。它们就像是我们的好朋友，会听我们说话并回答问题。你知道吗？聊天机器人不仅能记住我们的名字，还能读懂我们的心情呢！</p><p>想象一下，聊天机器人就像一个大大的耳朵。当我们说话的时候，它会听到我们的声音，就像听妈妈讲故事一样。但是，聊天机器人还能听到我们的心情啦！它会听我们开心的时候说“哈哈哈”，也会听我们难过的时候说“呜呜呜”。这些声音就像一种魔法，让聊天机器人知道我们的情绪了。</p><p>但是，聊天机器人真的能理解我们的心意吗？答案是肯定的！它会根据我们的声音和表情来猜我们想要什么。就像是我们平时玩的“猜猜我在想什么”游戏，聊天机器人也是这样猜出我们想做的事情。</p><p>所以，当我们和聊天机器人聊天时，它不仅能听懂我们说的话，还能读懂我们的心。这真是太神奇了，是不是让你觉得聊天机器人和我们的关系更近了呢？</p><p>小伙伴们，你们学会了吗？下次和聊天机器人聊天时，可以试试看，感受一下它懂你的特别之处吧！希望这个故事能让你们对聊天机器人有更深入的理解。我们下期再见！</p><p>（完）</p>"}, {"title": "机器学习在医疗诊断中有哪些具体应用？", "html": "<p>《AI医生：机器学习如何辅助医疗诊断》</p><p>大家好！今天我要给大家讲一个神奇的AI医生的故事。在医疗领域，机器学习就像一个聪明的助手，它可以帮助医生更好地诊断疾病。</p><p>想象一下，机器学习就像一个超级聪明的医生助理，它会分析大量的医学数据，比如病人的症状、检查结果和治疗方案。当有新的病人来就诊时，这个AI医生助理会快速扫描病历，就像我们翻书一样快，但它看的是数字文件。然后，它会根据这些信息给出可能的诊断建议，就像医生的直觉一样准确。</p><p>不过，这个AI医生助手不能完全代替医生，它只是帮医生快速筛选可能的诊断方向。最后，医生还需要通过面对面的交流，结合病人的具体表现，做出最终的诊断。这样，机器学习就像一个好帮手，让医生的工作更高效，能让更多人得到及时的治疗。</p><p>所以，虽然它不能像真正的人类医生那样，但它确实能帮我们更好地认识疾病。下次如果你问妈妈或爸爸关于机器学习在医疗中的事情，就可以用这个故事来解释了！</p>"}], "base": [{"title": "什么是生成对抗网络（GAN）？", "html": "<p>欢迎来到神秘的生成对抗网络（GAN）世界！生成对抗网络是一种特殊的神经网络，可以模仿人类的创造力，通过对抗训练来生成新的数据。</p><p>想象一下你是一个画家，你想要画一幅逼真的画。但是你不知道如何画，你只需要告诉计算机一些例子。计算机就可以通过这些例子来学习如何画出逼真的画。</p><p>GAN就是这样一种神经网络，它由两个神经网络组成，一个生成器和一个鉴别器。生成器负责生成新的数据，鉴别器负责判断数据的真伪。生成器和鉴别器之间互相竞争，生成器想要生成尽可能逼真的数据，鉴别器想要分辨出哪些数据是真实的，哪些数据是假的。在这个过程中，生成器会不断地改进自己的生成能力，最终能够生成逼真的数据。</p><p>比如，你可以让生成器生成一只可爱的熊猫，而鉴别器则负责判断这只熊猫是真实的还是生成的。如果你输入一些熊猫的照片，鉴别器就能够辨别出这些照片是否真实，从而帮助生成器学习如何生成逼真的熊猫。</p><p>总之，生成对抗网络是一种非常神奇的神经网络，它可以帮助我们生成逼真的数据，同时也能够用于解决许多其他的问题，比如图像生成、文本生成、语音合成等等。</p>"}, {"title": "AI如何通过自然语言处理技术实现智能客服？", "html": "<p>AI是人工智能的简称，它能够通过计算机实现类似于人类的智能行为。其中，自然语言处理技术是AI的核心之一。自然语言处理技术是指将自然语言（如人类使用的语言）转换成计算机能够理解和处理的形式的技术。比如，当你与AI智能客服交流时，AI会通过自然语言处理技术来理解你的需求，并提供相应的服务。</p><p>那么，AI是如何通过自然语言处理技术实现智能客服的呢？让我们来看一个例子。当你问“我要买什么礼物给我的朋友？”时，AI智能客服会通过自然语言处理技术来理解你的需求。具体来说，AI会通过语音识别技术将你的语音转换成文本，然后通过自然语言理解技术来分析文本中的关键词和语义，从而理解你的需求。</p><p>接下来，AI会利用自然语言生成技术来生成一个回答，这个回答应该是针对你的问题而设计的。比如，AI可能会说：“如果您朋友喜欢户外活动，您可以考虑购买一些户外装备，如登山鞋、户外背包等。”</p><p>可以看到，AI通过自然语言处理技术实现了智能客服，它能够理解人类的自然语言，并提供相应的服务。</p>"}, {"title": "人工智能如何识别和理解人类语言？", "html": "<p>人工智能（AI）可以通过学习和识别语音和文字来理解和表达人类语言。这类似于人类的耳朵和眼睛。</p><p>当你说话时，你通过口腔和喉部制造声音。这些声音由声波构成。AI可以通过麦克风将这些声波转换成计算机可以理解的数字信号。然后，AI将这些数字信号分解成声音的不同频率和振幅。这些信息类似于声音的不同音调和音量。</p><p>接下来，AI会使用算法来分析这些数字信号，以识别语音中的特定模式。例如，当您说“你好”时，AI可以识别出您的音调、音量和语音的频率。它还可以识别出不同的单词和短语，如“你好”、“谢谢”和“再见”。</p><p>最后，AI会将这些信息转换成文本或语音，以便与人类交流。例如，如果AI使用语音识别技术，它可能会将您说的“你好”转换成“你好，很高兴见到您”。</p><p>总的来说，AI是通过将人类语言分解成不同的声音成分，然后使用算法识别和理解这些成分来理解和表达人类语言的。就像人类通过耳朵和眼睛来理解和表达语言一样。</p>"}, {"title": "自然语言处理技术如何实现机器翻译？", "html": "<p>自然语言处理技术实现机器翻译是一种有趣而复杂的任务。它涉及多种技术和工具，比如机器学习和深度学习算法。</p><p>机器翻译就是将一种语言的文本转换成另一种语言的文本。传统的机器翻译使用的是规则和语法规则来将一种语言转换成另一种语言。但是这种方法只能应用于一些简单的语言和句子结构。</p><p>现代的机器翻译则是通过深度学习算法来实现的。深度学习算法是一种可以自主学习和优化的技术，它可以自动地从数据中学习并提取出有用的特征。通过这种方式，机器可以自主学习各种语言的语法规则，并生成准确的翻译结果。</p><p>例如，当我们使用搜索引擎搜索某个单词时，搜索引擎会根据这个单词的语义来返回与该单词相关的内容。同样的道理，机器翻译也会根据输入文本的语义来生成准确的翻译结果。</p><p>此外，机器翻译还会使用一些先进的技术来提高翻译质量，比如神经机器翻译、双向编码器表示等。这些技术可以帮助机器更好地理解输入文本的上下文和语义，从而生成更准确的翻译结果。</p><p>总的来说，自然语言处理技术实现了机器翻译，使人们能够轻松地跨越语言障碍，进行跨语言交流。</p>"}, {"title": "AI在医学影像诊断中如何辅助医生？", "html": "<p>标题：AI如何帮助医生诊断医学影像</p><p>医生的工作很辛苦，他们需要检查和分析很多医学影像，比如X光片、CT扫描和MRI图像。这些影像能够帮助医生了解人体内部的健康状况，但是，它们也非常复杂，有时很难分辨其中的细节。这时候，AI就来帮忙了！</p><p>AI是一种机器学习算法，它通过训练大量医学影像数据，学会了自动识别其中的异常和病变。比如，AI能够自动识别出CT扫描中的肿瘤，帮助医生做出诊断和治疗建议。而且，AI的速度非常快，可以快速地分析大量影像，帮助医生提高工作效率。</p><p>除了自动识别病变，AI还可以帮助医生进行影像分析和比较。比如，医生需要比较不同阶段的MRI图像，AI可以通过学习医生的经验和习惯，自动提取有用的特征，帮助医生更快地判断病变的变化趋势。</p><p>总的来说，AI在医学影像诊断中的应用，不仅提高了医生的工作效率，也提高了诊断的准确性和精度。它就像是医生的得力助手，帮助医生更好地保护患者的健康。</p>"}]};
+
+const BASELINES = ["domain", "qwen2.5-14B", "MoE", "Lora", "base"];
+const ROUND_LABEL = {"domain": "第1轮", "qwen2.5-14B": "第2轮", "MoE": "第3轮", "Lora": "第4轮", "base": "第5轮"};
+const DOMAIN = "ai";
+const DOMAIN_CN = "人工智能（AI）";
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgordeqb';
+
+// ════════════════════════════════════════════════════════════
+// 应用状态
+// ════════════════════════════════════════════════════════════
+const state = {
+  // Part A
+  pid: '', age: '', gender: '', grade: '', readHabit: '', channels: [],
+  guardianSig: '', consentDate: '',
+  // Round progress: roundIndex 0-4, subStep: 'articles'|'B'|'C'|'D'
+  currentRound: 0,
+  currentSub: 'articles',
+  // Answers: answers[roundIdx][part][qnum] = 0-5
+  answers: Array.from({length:5}, () => ({B:{}, C:{}, D:{}})),
+  // Article read confirmations: artRead[roundIdx][artIdx] = bool
+  artRead: Array.from({length:5}, () => Array(5).fill(false)),
+  // Current article tab shown
+  artTab: Array.from({length:5}, () => 0),
+};
+
+// ════════════════════════════════════════════════════════════
+// Screen utilities
+// ════════════════════════════════════════════════════════════
+const TOTAL_STEPS = 2 + 5 * 4; // cover + partA + 5*(articles+B+C+D) = 22
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+function setProgress(step) {
+  const pct = Math.round(step / TOTAL_STEPS * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('headerProgress').textContent = pct + '%';
+}
+
+function setHeaderTitle(title) {
+  document.getElementById('headerTitle').textContent = title;
+}
+
+function toast(msg, dur=3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ════════════════════════════════════════════════════════════
+// Cover → Part A
+// ════════════════════════════════════════════════════════════
+function startPartA() {
+  state.guardianSig = document.getElementById('guardianSig').value.trim();
+  state.consentDate = document.getElementById('consentDate').value.trim();
+  showScreen('s-partA');
+  setProgress(1);
+  setHeaderTitle('A 基本信息');
+  // Style radio/check highlights
+  document.querySelectorAll('.radio-opt input, .check-opt input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const group = inp.closest('.radio-grid, .check-grid');
+      if (!group) return;
+      if (inp.type === 'radio') {
+        group.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('selected'));
+        inp.closest('.radio-opt').classList.add('selected');
+      } else {
+        inp.closest('.check-opt').classList.toggle('selected', inp.checked);
+      }
+    });
+  });
+}
+
+function submitPartA() {
+  const pid = document.getElementById('pid').value.trim();
+  if (!pid) {
+    document.getElementById('pid-err').classList.add('show');
+    toast('请填写参与者编号');
+    return;
+  }
+  document.getElementById('pid-err').classList.remove('show');
+
+  const age  = document.getElementById('a_age').value.trim();
+  const gnd  = document.querySelector('input[name=gender]:checked');
+  const grd  = document.querySelector('input[name=grade]:checked');
+  const rh   = document.querySelector('input[name=read_habit]:checked');
+  if (!age || !gnd || !grd || !rh) { toast('请完整填写所有必填项'); return; }
+
+  state.pid       = pid;
+  state.age       = age;
+  state.gender    = gnd.value;
+  state.grade     = grd.value;
+  state.readHabit = rh.value;
+  state.channels  = [...document.querySelectorAll('.check-opt input:checked')].map(i=>i.value);
+
+  showRound(0);
+}
+
+// ════════════════════════════════════════════════════════════
+// Round builder
+// ════════════════════════════════════════════════════════════
+function roundScreenId(r, sub) { return `s-r${r}-${sub}`; }
+
+function buildAllRoundScreens() {
+  const container = document.getElementById('rounds-container');
+  BASELINES.forEach((bl, r) => {
+    const articles = CORPUS[bl];
+    const label    = ROUND_LABEL[bl];
+
+    // ── Articles screen ──
+    container.insertAdjacentHTML('beforeend', buildArticlesScreen(r, bl, label, articles));
+
+    // ── B / C / D screens ──
+    ['B','C','D'].forEach(part => {
+      container.insertAdjacentHTML('beforeend', buildSurveyScreen(r, bl, label, part, articles));
+    });
+  });
+
+  // Bind all events after insertion
+  bindAllEvents();
+}
+
+function buildArticlesScreen(r, bl, label, articles) {
+  const tabs = articles.map((art, i) =>
+    `<button class="art-tab${i===0?' active':''}" id="tab-r${r}-a${i}"
+      onclick="switchArtTab(${r},${i})">${i+1}</button>`
+  ).join('');
+
+  const panels = articles.map((art, i) => `
+    <div class="article-panel${i===0?' active':''}" id="panel-r${r}-a${i}">
+      <div class="article-title-bar">
+        <span class="art-num">文章 ${i+1}/5</span>
+        <h2>${esc(art.title)}</h2>
+      </div>
+      <div class="article-body">${art.html}</div>
+      <label class="read-confirm" id="confirm-r${r}-a${i}">
+        <input type="checkbox" id="chk-r${r}-a${i}" onchange="markRead(${r},${i})">
+        我已认真阅读完这篇文章
+      </label>
+      <div class="art-nav-row">
+        ${i>0 ? `<button class="btn btn-outline" onclick="switchArtTab(${r},${i-1})">← 上一篇</button>` : '<span></span>'}
+        ${i<4
+          ? `<button class="btn btn-primary" onclick="switchArtTab(${r},${i+1})">下一篇 →</button>`
+          : `<button class="btn btn-primary" id="go-survey-r${r}" onclick="goToSurvey(${r})" disabled>开始答题 →</button>`
+        }
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div id="${roundScreenId(r,'articles')}" class="screen">
+      <div class="round-banner">
+        <h2>${label} &nbsp;阅读材料</h2>
+        <p>请认真阅读以下 5 篇文章，每篇读完后勾选"我已读完"，再进入下一篇</p>
+      </div>
+      <div class="card">
+        <div class="article-nav">${tabs}</div>
+        ${panels}
+      </div>
+    </div>`;
+}
+
+function buildSurveyScreen(r, bl, label, part, articles) {
+  const sec = {"B": {"title": "B 认知负荷", "desc": "以下问题收集您在阅读这篇科普文章过程中及阅读后的感受，请根据实际体验打分。", "subs": [{"id": "B1", "title": "B1 内在适配性", "desc": "考察文章的概念难度与信息量是否与您的认知水平相匹配。", "qs": [[1, "理解这篇文章的主题，我需要付出很多心理努力。"], [2, "这篇文章的整体难度对我来说是合适的。"], [3, "文章的信息量对我来说恰到好处，既不太多也不太少。"], [4, "阅读这篇文章，我获得了不少新的知识收获。"]]}, {"id": "B2", "title": "B2 外在负担控制", "desc": "考察文章在表达、结构、术语等方面是否给您造成了不必要的理解障碍。", "qs": [[5, "为了理解文章中的概念或术语，我需要付出额外的思考或推理。"], [6, "文章的段落结构和逻辑顺序让我容易跟上。"], [7, "文章的语言表达（措辞、句子）让我读起来很顺畅。"], [8, "文章内容简洁凝练，没有冗余或偏题的部分。"]]}, {"id": "B3", "title": "B3 促进性支持", "desc": "考察文章是否通过类比、示例、小结等方式帮助您真正建立对知识的理解。", "qs": [[9, "文章通过有效的组织方式（如类比、示例、小结等）帮助我理解核心知识点。"], [10, "文章提供的解释和例子足以支持我复述其核心内容。"], [11, "文章帮助我对该主题的理解有了明显的深入和增加。"], [12, "文章通过恰当的总结和梳理，使知识点在我脑海中形成了较为清晰的整体印象。"]]}]}, "C": {"title": "C 个性化对齐", "desc": "以下问题考察这篇文章是否针对您这类读者进行了恰当的定制。", "subs": [{"id": "C1", "title": "C1 内容相关性", "desc": "考察文章选取的内容侧面是否对您真正有意义。", "qs": [[13, "文章聚焦的科学内容侧面，正是我关心或感兴趣的部分。"], [14, "文章选取的角度和内容对我来说很有实际意义。"], [15, "文章包含了大量我觉得与自己无关的内容。"], [16, "文章涵盖的内容方向与我真正想了解的方向高度吻合。"]]}, {"id": "C2", "title": "C2 知识水平适配", "desc": "考察文章的解释深度和技术细节是否与您的背景相符。", "qs": [[17, "文章的解释深度和难度适合我目前的知识水平。"], [18, "文章对我已经了解的知识花了过多篇幅解释，导致信息层级低于我的预期。"], [19, "文章的信息密度对我来说恰到好处。"], [20, "文章在关键概念上的解释详尽程度让我感到满意。"]]}, {"id": "C3", "title": "C3 风格一致性", "desc": "考察文章的语言风格、语气和表达方式是否符合您的阅读习惯。", "qs": [[21, "文章的语言风格（词汇选择、语气）让我感到亲切自然。"], [22, "文章的组织结构便于我跟随作者的思路。"], [23, "文章的语气让我感到不适（例如过于学术、过于幼稚或过于说教）。"], [24, "文章的整体表达节奏符合我的阅读习惯。"]]}, {"id": "C4", "title": "C4 情境共鸣", "desc": "考察文章的示例和类比是否来自您熟悉的生活情境。", "qs": [[25, "文章中的例子来自我熟悉的日常生活场景。"], [26, "文章使用的类比让我感到亲切，帮助我理解了抽象的概念。"], [27, "文章让我感觉科学知识与我自己的生活有一定关联。"], [28, "文章中的例子或场景对我来说感觉陌生，难以产生代入感。"]]}]}, "D": {"title": "D 读者态度", "desc": "以下问题收集您对这篇文章的整体情感与行为倾向。", "subs": [{"id": "D1", "title": "D1 参与吸引力", "desc": "考察文章是否有趣、生动，能够持续吸引您的注意力。", "qs": [[29, "文章的开头很快就吸引了我的注意力。"], [30, "在整个阅读过程中，我始终对文章内容保持好奇心。"], [31, "文章的表达生动有趣，读起来不会感到枯燥。"], [32, "阅读这篇文章的过程中，我有几次想要跳过某些段落。"]]}, {"id": "D2", "title": "D2 信任与可信度", "desc": "考察文章是否给您留下了严谨、可信的印象。", "qs": [[33, "我认为文章中的科学知识是可靠的。"], [34, "文章对不确定的内容保持了适度的谨慎，没有过度夸大。"], [35, "文章在传达科学知识的同时，没有让我感到被灌输或强迫接受。"], [36, "文章中有些表述让我对其科学准确性产生了疑虑。"]]}, {"id": "D3", "title": "D3 持续阅读意愿", "desc": "考察文章是否激发了您进一步了解该主题的意愿。", "qs": [[37, "阅读后，我对该主题产生了进一步了解的兴趣。"], [38, "我愿意在未来继续阅读有关这一主题的类似文章。"], [39, "我愿意将这篇文章推荐给与我情况相似的朋友。"], [40, "读完这篇文章后，我觉得没有必要再进一步了解这个话题了。"]]}]}};
+  const s = sec[part];
+
+  // Reference module (collapsible article preview)
+  const refItems = articles.map((art, i) => `
+    <div class="ref-art-item">
+      <div class="ref-art-hdr" onclick="toggleRefArt(this)">
+        <span class="ref-art-num">文章 ${i+1}</span>
+        <span class="ref-art-title">${esc(art.title)}</span>
+        <span class="ref-art-arrow">▶</span>
+      </div>
+      <div class="ref-art-body">${art.html}</div>
+    </div>
+  `).join('');
+
+  // Question rows
+  const subHtml = s.subs.map(sub => `
+    <div class="sub-section">
+      <div class="sub-title">${sub.title}</div>
+      <div class="sub-desc">${sub.desc}</div>
+      ${sub.qs.map(([qn, qt]) => `
+        <div class="q-item" id="qi-r${r}-${part}-${qn}">
+          <span class="q-num">Q${qn}</span>
+          <span class="q-text">${esc(qt)}</span>
+          <div class="q-scale">
+            <div class="scale-labels"><span>完全不符合</span><span>完全符合</span></div>
+            <div class="scale-btns">
+              ${[0,1,2,3,4,5].map(v =>
+                `<button class="scale-btn" data-r="${r}" data-part="${part}" data-q="${qn}" data-v="${v}"
+                  onclick="selectScale(this)">${v}</button>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  const prevPart = part==='B' ? null : part==='C' ? 'B' : 'C';
+  const nextPart = part==='B' ? 'C' : part==='C' ? 'D' : null;
+
+  const prevBtn = prevPart
+    ? `<button class="btn btn-outline" onclick="showScreen('${roundScreenId(r,prevPart)}')" >← 返回 ${prevPart} 部分</button>`
+    : `<button class="btn btn-outline" onclick="showScreen('${roundScreenId(r,'articles')}')">← 返回阅读材料</button>`;
+
+  const nextBtn = nextPart
+    ? `<button class="btn btn-primary" onclick="goToNextPart(${r},'${part}','${nextPart}')">${nextPart} 部分 →</button>`
+    : r < 4
+      ? `<button class="btn btn-primary" onclick="finishRound(${r})">完成本轮，进入第${r+2}轮 →</button>`
+      : `<button class="btn btn-primary" onclick="finishLastRound()">完成全部，提交答卷 →</button>`;
+
+  return `
+    <div id="${roundScreenId(r,part)}" class="screen">
+
+      <!-- 语料预览模块 -->
+      <div class="ref-module">
+        <div class="ref-header" onclick="toggleRefPanel(this)">
+          <h3>📖 回顾本轮文章（${label} · 共5篇）</h3>
+          <button class="ref-toggle-btn" onclick="event.stopPropagation();expandAllRef(this)">展开全部</button>
+        </div>
+        <div class="ref-body" id="ref-body-r${r}-${part}">${refItems}</div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="survey-part-label">${s.title}</div>
+        <div class="survey-part-desc">${s.desc}</div>
+        ${subHtml}
+        <div class="btn-row">
+          ${prevBtn}
+          ${nextBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// Event handlers
+// ════════════════════════════════════════════════════════════
+function bindAllEvents() {
+  // Radio/checkbox styling handled inline via onclick/onchange
+}
+
+function switchArtTab(r, i) {
+  state.artTab[r] = i;
+  // Update tabs
+  for (let j=0;j<5;j++) {
+    const tab = document.getElementById(`tab-r${r}-a${j}`);
+    const panel = document.getElementById(`panel-r${r}-a${j}`);
+    if (!tab || !panel) continue;
+    const done = state.artRead[r][j];
+    tab.className = 'art-tab' + (j===i?' active':'') + (done?' done':'');
+    panel.classList.toggle('active', j===i);
+  }
+}
+
+function markRead(r, i) {
+  const chk = document.getElementById(`chk-r${r}-a${i}`);
+  const confirm = document.getElementById(`confirm-r${r}-a${i}`);
+  state.artRead[r][i] = chk.checked;
+  confirm.classList.toggle('checked', chk.checked);
+  // Update tab style
+  const tab = document.getElementById(`tab-r${r}-a${i}`);
+  if (tab) tab.classList.toggle('done', chk.checked);
+  // Enable "go to survey" button when all 5 read
+  const allRead = state.artRead[r].every(v=>v);
+  const goBtn = document.getElementById(`go-survey-r${r}`);
+  if (goBtn) goBtn.disabled = !allRead;
+}
+
+function goToSurvey(r) {
+  if (!state.artRead[r].every(v=>v)) { toast('请先读完并确认所有5篇文章'); return; }
+  showScreen(roundScreenId(r,'B'));
+  setHeaderTitle(`${ROUND_LABEL[BASELINES[r]]} · B 认知负荷`);
+  setProgress(2 + r*4 + 1);
+}
+
+function selectScale(btn) {
+  const r = +btn.dataset.r, part = btn.dataset.part, q = +btn.dataset.q, v = +btn.dataset.v;
+  state.answers[r][part][q] = v;
+  // Update button styles in this q-item
+  const qi = document.getElementById(`qi-r${r}-${part}-${q}`);
+  qi.querySelectorAll('.scale-btn').forEach(b => {
+    b.classList.toggle('selected', +b.dataset.v === v);
+  });
+  qi.classList.remove('unanswered');
+}
+
+function validatePart(r, part) {
+  const sec = getSections();
+  let allOk = true;
+  sec[part].subs.forEach(sub => {
+    sub.qs.forEach(([qn]) => {
+      const answered = state.answers[r][part][qn] !== undefined;
+      const qi = document.getElementById(`qi-r${r}-${part}-${qn}`);
+      if (qi) qi.classList.toggle('unanswered', !answered);
+      if (!answered) allOk = false;
+    });
+  });
+  return allOk;
+}
+
+function goToNextPart(r, fromPart, toPart) {
+  if (!validatePart(r, fromPart)) {
+    toast('请完成本页所有量表题后再继续');
+    // Scroll to first unanswered
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  showScreen(roundScreenId(r, toPart));
+  setHeaderTitle(`${ROUND_LABEL[BASELINES[r]]} · ${toPart} 部分`);
+  setProgress(2 + r*4 + (toPart==='C'?2:3));
+}
+
+function finishRound(r) {
+  if (!validatePart(r,'D')) {
+    toast('请完成本页所有量表题后再继续');
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  showRound(r+1);
+}
+
+function finishLastRound() {
+  if (!validatePart(4,'D')) {
+    toast('请完成本页所有量表题后再继续');
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  showScreen('s-done');
+  setProgress(TOTAL_STEPS);
+  setHeaderTitle('提交完成');
+  submitToFormspree();
+}
+
+function showRound(r) {
+  state.currentRound = r;
+  const bl    = BASELINES[r];
+  const label = ROUND_LABEL[bl];
+  showScreen(roundScreenId(r,'articles'));
+  setHeaderTitle(`${label} 阅读材料`);
+  setProgress(2 + r*4);
+}
+
+// ── Reference panel ──
+function toggleRefPanel(hdr) {
+  const body = hdr.nextElementSibling;
+  body.classList.toggle('open');
+  const btn = hdr.querySelector('.ref-toggle-btn');
+  if (btn) btn.textContent = body.classList.contains('open') ? '收起面板' : '展开全部';
+}
+
+function expandAllRef(btn) {
+  const body = btn.closest('.ref-module').querySelector('.ref-body');
+  const allOpen = [...body.querySelectorAll('.ref-art-body')].every(b=>b.classList.contains('open'));
+  body.classList.add('open');
+  body.querySelectorAll('.ref-art-body').forEach(b => b.classList.toggle('open', !allOpen));
+  body.querySelectorAll('.ref-art-arrow').forEach(a => a.classList.toggle('open', !allOpen));
+  btn.textContent = allOpen ? '展开全部' : '收起全部';
+}
+
+function toggleRefArt(hdr) {
+  const body  = hdr.nextElementSibling;
+  const arrow = hdr.querySelector('.ref-art-arrow');
+  const open  = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+// ── Sections data (for JS validation) ──
+function getSections() {
+  return {"B": {"subs": [{"qs": [[1, "理解这篇文章的主题，我需要付出很多心理努力。"], [2, "这篇文章的整体难度对我来说是合适的。"], [3, "文章的信息量对我来说恰到好处，既不太多也不太少。"], [4, "阅读这篇文章，我获得了不少新的知识收获。"]]}, {"qs": [[5, "为了理解文章中的概念或术语，我需要付出额外的思考或推理。"], [6, "文章的段落结构和逻辑顺序让我容易跟上。"], [7, "文章的语言表达（措辞、句子）让我读起来很顺畅。"], [8, "文章内容简洁凝练，没有冗余或偏题的部分。"]]}, {"qs": [[9, "文章通过有效的组织方式（如类比、示例、小结等）帮助我理解核心知识点。"], [10, "文章提供的解释和例子足以支持我复述其核心内容。"], [11, "文章帮助我对该主题的理解有了明显的深入和增加。"], [12, "文章通过恰当的总结和梳理，使知识点在我脑海中形成了较为清晰的整体印象。"]]}]}, "C": {"subs": [{"qs": [[13, "文章聚焦的科学内容侧面，正是我关心或感兴趣的部分。"], [14, "文章选取的角度和内容对我来说很有实际意义。"], [15, "文章包含了大量我觉得与自己无关的内容。"], [16, "文章涵盖的内容方向与我真正想了解的方向高度吻合。"]]}, {"qs": [[17, "文章的解释深度和难度适合我目前的知识水平。"], [18, "文章对我已经了解的知识花了过多篇幅解释，导致信息层级低于我的预期。"], [19, "文章的信息密度对我来说恰到好处。"], [20, "文章在关键概念上的解释详尽程度让我感到满意。"]]}, {"qs": [[21, "文章的语言风格（词汇选择、语气）让我感到亲切自然。"], [22, "文章的组织结构便于我跟随作者的思路。"], [23, "文章的语气让我感到不适（例如过于学术、过于幼稚或过于说教）。"], [24, "文章的整体表达节奏符合我的阅读习惯。"]]}, {"qs": [[25, "文章中的例子来自我熟悉的日常生活场景。"], [26, "文章使用的类比让我感到亲切，帮助我理解了抽象的概念。"], [27, "文章让我感觉科学知识与我自己的生活有一定关联。"], [28, "文章中的例子或场景对我来说感觉陌生，难以产生代入感。"]]}]}, "D": {"subs": [{"qs": [[29, "文章的开头很快就吸引了我的注意力。"], [30, "在整个阅读过程中，我始终对文章内容保持好奇心。"], [31, "文章的表达生动有趣，读起来不会感到枯燥。"], [32, "阅读这篇文章的过程中，我有几次想要跳过某些段落。"]]}, {"qs": [[33, "我认为文章中的科学知识是可靠的。"], [34, "文章对不确定的内容保持了适度的谨慎，没有过度夸大。"], [35, "文章在传达科学知识的同时，没有让我感到被灌输或强迫接受。"], [36, "文章中有些表述让我对其科学准确性产生了疑虑。"]]}, {"qs": [[37, "阅读后，我对该主题产生了进一步了解的兴趣。"], [38, "我愿意在未来继续阅读有关这一主题的类似文章。"], [39, "我愿意将这篇文章推荐给与我情况相似的朋友。"], [40, "读完这篇文章后，我觉得没有必要再进一步了解这个话题了。"]]}]}};
+}
+
+// ════════════════════════════════════════════════════════════
+// Formspree submission
+// ════════════════════════════════════════════════════════════
+function buildPayload() {
+  const data = {
+    领域: DOMAIN_CN,
+    参与者编号: state.pid,
+    年龄: state.age,
+    性别: state.gender,
+    年级: state.grade,
+    是否常读科普: state.readHabit,
+    获取渠道: state.channels.join('，'),
+    监护人签字: state.guardianSig,
+    同意日期: state.consentDate,
+  };
+  BASELINES.forEach((bl, r) => {
+    const label = ROUND_LABEL[bl];
+    ['B','C','D'].forEach(part => {
+      const sec = getSections();
+      sec[part].subs.forEach(sub => {
+        sub.qs.forEach(([qn]) => {
+          const key = `${label}_${part}Q${qn}`;
+          data[key] = state.answers[r][part][qn] ?? '';
+        });
+      });
+    });
+  });
+  return data;
+}
+
+async function submitToFormspree() {
+  const statusEl = document.getElementById('submit-status');
+  try {
+    const payload = buildPayload();
+    const resp = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok) {
+      statusEl.innerHTML = '<span style="color:#065f46;font-weight:600">✓ 数据已成功提交！感谢您的参与。</span>';
+    } else {
+      const err = await resp.json();
+      statusEl.innerHTML = `<span style="color:#dc2626">提交失败（${resp.status}），请截图此页面发送给研究员。</span>`;
+      console.error(err);
+    }
+  } catch(e) {
+    statusEl.innerHTML = '<span style="color:#dc2626">网络错误，请检查网络后刷新页面重试，或截图发给研究员。</span>';
+    console.error(e);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// Helpers
+// ════════════════════════════════════════════════════════════
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════════════════════════
+// Init
+// ════════════════════════════════════════════════════════════
+buildAllRoundScreens();
+setProgress(0);
+</script>
+</body>
+</html>

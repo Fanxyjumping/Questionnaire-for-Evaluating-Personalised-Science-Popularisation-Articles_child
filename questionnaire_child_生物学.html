@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个性化科普文章评估问卷（child）· 生物学（Biology）</title>
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  background: #f4f6fb;
+  color: #1a1a2e;
+  font-size: 16px;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* ── Layout ── */
+.app-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+
+/* ── Screen management ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  padding: 28px 24px;
+  margin: 20px 16px;
+}
+
+/* ── Page header (sticky) ── */
+.page-header {
+  background: #1e3a8a;
+  color: #fff;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-header .domain-tag {
+  font-size: 12px;
+  background: rgba(255,255,255,.2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.page-header h1 {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.page-header .progress-txt {
+  font-size: 12px;
+  color: #93c5fd;
+  flex-shrink: 0;
+}
+
+/* ── Progress bar ── */
+.progress-bar-wrap {
+  height: 4px;
+  background: #dbeafe;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: #3b82f6;
+  transition: width .4s ease;
+}
+
+/* ── Cover / Instructions ── */
+.cover-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+}
+.cover-sub {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+.info-box {
+  border-left: 4px solid #3b82f6;
+  background: #eff6ff;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 14px;
+}
+.info-box.warn {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+.info-box h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 6px;
+}
+.info-box.warn h3 { color: #b45309; }
+.info-box p {
+  font-size: 14px;
+  color: #374151;
+}
+.info-box.warn p { color: #78350f; }
+.consent-line {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #78350f;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.consent-line label { white-space: nowrap; }
+.consent-line input[type=text] {
+  border: none;
+  border-bottom: 1.5px solid #d97706;
+  background: transparent;
+  flex: 1;
+  min-width: 120px;
+  font-size: 14px;
+  outline: none;
+  color: #1a1a2e;
+}
+
+/* ── Part A ── */
+.form-group {
+  margin-bottom: 22px;
+}
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.form-label span.req { color: #ef4444; }
+.text-input {
+  width: 100%;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s;
+  background: #fafafa;
+}
+.text-input:focus { border-color: #3b82f6; background: #fff; }
+.radio-grid, .check-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-opt, .check-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  font-size: 15px;
+}
+.radio-opt:hover, .check-opt:hover { border-color: #93c5fd; background: #eff6ff; }
+.radio-opt input, .check-opt input { accent-color: #3b82f6; width: 18px; height: 18px; flex-shrink:0; }
+.radio-opt.selected, .check-opt.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+/* ── Round banner ── */
+.round-banner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #fff;
+  padding: 32px 24px;
+  border-radius: 12px;
+  margin: 20px 16px;
+  text-align: center;
+}
+.round-banner h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.round-banner p {
+  font-size: 14px;
+  color: #bfdbfe;
+}
+
+/* ── Articles ── */
+.article-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.art-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #d1d5db;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+  transition: all .15s;
+  font-family: inherit;
+}
+.art-tab.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+.art-tab.done { border-color: #10b981; color: #065f46; background: #ecfdf5; }
+.article-panel { display: none; }
+.article-panel.active { display: block; }
+.article-title-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+.art-num {
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.article-title-bar h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+}
+.article-body { color: #374151; }
+.article-body p { margin-bottom: 14px; text-align: justify; }
+.article-body h3 { font-size: 16px; font-weight: 700; margin: 20px 0 8px; color: #111; }
+.article-body h4 { font-size: 15px; font-weight: 600; margin: 16px 0 6px; color: #222; }
+.article-body ul, .article-body ol { margin: 0 0 14px 22px; }
+.article-body li { margin-bottom: 4px; }
+.article-body strong { font-weight: 700; }
+.article-body em { font-style: italic; }
+.art-nav-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 10px;
+}
+.read-confirm {
+  background: #ecfdf5;
+  border: 1.5px solid #10b981;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #065f46;
+  font-weight: 600;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+}
+.read-confirm input { accent-color: #10b981; width: 18px; height: 18px; }
+.read-confirm.checked { background: #d1fae5; }
+
+/* ── Reference (collapsible preview) ── */
+.ref-module {
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  margin: 20px 16px 0;
+  overflow: hidden;
+}
+.ref-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #f8fafc;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+.ref-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+.ref-toggle-btn {
+  font-size: 12px;
+  background: #e0e7ff;
+  color: #3730a3;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ref-body { display: none; border-top: 1px solid #e5e7eb; }
+.ref-body.open { display: block; }
+.ref-art-item { border-bottom: 1px solid #f3f4f6; }
+.ref-art-item:last-child { border-bottom: none; }
+.ref-art-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  background: #fff;
+  transition: background .12s;
+}
+.ref-art-hdr:hover { background: #f9fafb; }
+.ref-art-num {
+  font-size: 11px;
+  font-weight: 700;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.ref-art-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+}
+.ref-art-arrow {
+  color: #9ca3af;
+  font-size: 13px;
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+.ref-art-arrow.open { transform: rotate(90deg); }
+.ref-art-body {
+  display: none;
+  padding: 4px 18px 16px 18px;
+  background: #fafafa;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.7;
+}
+.ref-art-body.open { display: block; }
+.ref-art-body p { margin-bottom: 10px; text-align: justify; }
+.ref-art-body h3 { font-size: 14px; font-weight: 700; margin: 12px 0 6px; }
+.ref-art-body h4 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+.ref-art-body ul, .ref-art-body ol { margin: 0 0 10px 18px; }
+.ref-art-body li { margin-bottom: 3px; }
+
+/* ── Survey ── */
+.survey-part-label {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 4px;
+}
+.survey-part-desc {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+.sub-section {
+  margin-bottom: 28px;
+}
+.sub-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 4px;
+  padding-left: 10px;
+  border-left: 3px solid #3b82f6;
+}
+.sub-desc {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 14px;
+  padding-left: 13px;
+}
+.q-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.q-item:last-child { border-bottom: none; }
+.q-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  min-width: 28px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+.q-text {
+  font-size: 14px;
+  color: #1f2937;
+  flex: 1;
+  line-height: 1.6;
+}
+.q-scale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #9ca3af;
+  width: 100%;
+}
+.scale-btns {
+  display: flex;
+  gap: 4px;
+}
+.scale-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all .12s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scale-btn:hover { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+.scale-btn.selected {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+.q-item.unanswered .scale-btn { border-color: #fca5a5; }
+
+/* Mobile: stack scale below text */
+@media (max-width: 560px) {
+  .q-item { flex-direction: column; gap: 8px; }
+  .q-scale { align-items: flex-start; width: 100%; }
+  .scale-btns { width: 100%; justify-content: space-between; }
+  .scale-btn { flex: 1; height: 40px; }
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all .15s;
+}
+.btn-primary { background: #1e3a8a; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+.btn-outline {
+  background: #fff;
+  color: #374151;
+  border: 1.5px solid #d1d5db;
+}
+.btn-outline:hover { border-color: #6b7280; }
+.btn-danger { background: #fff; color: #dc2626; border: 1.5px solid #fca5a5; }
+.btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.btn-row.center { justify-content: center; }
+
+/* ── Completion ── */
+.complete-card {
+  text-align: center;
+  padding: 48px 24px;
+}
+.complete-icon { font-size: 56px; margin-bottom: 16px; }
+.complete-card h2 { font-size: 24px; font-weight: 800; color: #065f46; margin-bottom: 10px; }
+.complete-card p { color: #6b7280; font-size: 15px; }
+
+/* ── Toast ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1f2937;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 999;
+  transition: transform .3s ease;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Required indicator ── */
+.req-note {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+  display: none;
+}
+.req-note.show { display: block; }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- Sticky header -->
+<div class="page-header" id="pageHeader">
+  <span class="domain-tag">生物学（Biology）</span>
+  <h1 id="headerTitle">个性化科普文章评估问卷</h1>
+  <span class="progress-txt" id="headerProgress"></span>
+</div>
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+</div>
+
+<div class="app-wrap">
+
+<!-- ══ 屏幕0：封面 ══ -->
+<div id="s-cover" class="screen active">
+  <div class="card" style="margin-top:30px">
+    <div class="cover-title">个性化科普文章评估问卷</div>
+    <div class="cover-sub">child 版 · 生物学（Biology）</div>
+
+    <div class="info-box warn">
+      <h3>★ 监护人同意声明</h3>
+      <p>本问卷面向18周岁以下未成年人。参与前须经监护人知情同意。</p>
+      <div class="consent-line">
+        <label>监护人签字：</label>
+        <input type="text" id="guardianSig" placeholder="请输入监护人姓名">
+        <label>日期：</label>
+        <input type="text" id="consentDate" placeholder="如 2026-04-24">
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>本次任务</h3>
+      <p>您将完成 <strong>5轮</strong>阅读与答题（每轮5篇文章 + 40道量表题），共约60–90分钟。</p>
+    </div>
+    <div class="info-box">
+      <h3>评分说明</h3>
+      <p>所有量表题使用 <strong>0–5 分</strong>（0=完全不符合，5=完全符合）。点击对应数字即可选择，可更改。</p>
+    </div>
+    <div class="info-box">
+      <h3>隐私与数据</h3>
+      <p>所有答案仅用于学术研究，严格保密，不与个人身份关联。</p>
+    </div>
+
+    <div class="btn-row center" style="margin-top:28px">
+      <button class="btn btn-primary" onclick="startPartA()">开始填写 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 屏幕1：Part A ══ -->
+<div id="s-partA" class="screen">
+  <div class="round-banner" style="background:linear-gradient(135deg,#374151,#1f2937)">
+    <h2>A &nbsp;基本信息</h2>
+    <p>以下信息只需填写一次，全程保密</p>
+  </div>
+  <div class="card">
+
+    <div class="form-group">
+      <label class="form-label">参与者编号 <span class="req">*</span></label>
+      <input class="text-input" id="pid" type="text" placeholder="请输入研究员分配给您的编号">
+      <div class="req-note" id="pid-err">请填写参与者编号</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q1. 您的年龄是？ <span class="req">*</span></label>
+      <input class="text-input" id="a_age" type="number" min="6" max="17" placeholder="请输入年龄（岁）">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q2. 您的性别是？ <span class="req">*</span></label>
+      <div class="radio-grid" id="rg-gender">
+        <label class="radio-opt"><input type="radio" name="gender" value="男"> 男</label>
+        <label class="radio-opt"><input type="radio" name="gender" value="女"> 女</label>
+        <label class="radio-opt"><input type="radio" name="gender" value="其他"> 其他</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q3. 您目前就读的年级是？ <span class="req">*</span></label>
+      <div class="radio-grid" id="rg-grade">
+        <label class="radio-opt"><input type="radio" name="grade" value="小学1-3年级"> 小学 1–3 年级</label>
+        <label class="radio-opt"><input type="radio" name="grade" value="小学4-6年级"> 小学 4–6 年级</label>
+        <label class="radio-opt"><input type="radio" name="grade" value="初中"> 初中</label>
+        <label class="radio-opt"><input type="radio" name="grade" value="高中"> 高中</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q4. 您是否经常阅读科普文章？ <span class="req">*</span></label>
+      <div class="radio-grid" id="rg-read">
+        <label class="radio-opt"><input type="radio" name="read_habit" value="是"> 是</label>
+        <label class="radio-opt"><input type="radio" name="read_habit" value="否"> 否</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Q5. 您主要通过哪些渠道获取科普信息？（可多选）</label>
+      <div class="check-grid">
+        <label class="check-opt"><input type="checkbox" value="图文社交媒体"> 图文社交媒体</label>
+        <label class="check-opt"><input type="checkbox" value="科普书籍"> 科普书籍</label>
+        <label class="check-opt"><input type="checkbox" value="短视频"> 短视频</label>
+        <label class="check-opt"><input type="checkbox" value="课堂/讲座"> 课堂 / 讲座</label>
+        <label class="check-opt"><input type="checkbox" value="其他"> 其他</label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitPartA()">确认，进入第1轮 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 屏幕 2–21：五轮（每轮4屏）将由 JS 动态生成 ══ -->
+<div id="rounds-container"></div>
+
+<!-- ══ 屏幕22：完成提交 ══ -->
+<div id="s-done" class="screen">
+  <div class="card complete-card">
+    <div class="complete-icon">🎉</div>
+    <h2>全部完成！感谢您的参与</h2>
+    <p style="margin-top:8px">您已完成所有5轮阅读与答题。</p>
+    <p style="margin-top:20px;font-size:14px;color:#9ca3af">数据正在提交，请稍候……</p>
+    <div id="submit-status" style="margin-top:16px;font-size:14px"></div>
+  </div>
+</div>
+
+</div><!-- /.app-wrap -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// 语料数据
+// ════════════════════════════════════════════════════════════
+const CORPUS = {"domain": [{"title": "为什么细胞分裂需要进行有丝分裂和减数分裂？", "html": "<p>小朋友们，你知道吗？细胞王国里有着神奇的分裂仪式，它们要通过两种不同的方式——有丝分裂和减数分裂——来完成自我复制，就像魔术师一样，让生命在时间的长河中永续流传。今天，我们就来揭开这两场神秘的分裂秀的秘密。</p><p>首先，让我们先说说有丝分裂。想象一下，当你从蛋壳里蹦出来的时候，你是一个小小的婴儿，只有一颗小小的种子。这个种子会不断地生长和分裂，每次分裂后，它都会变得更加强大和健壮。这正是有丝分裂的过程。细胞就像是一个小小的生命体，它们也需要分裂成长，每个新分裂出来的细胞都会继承原有的DNA，确保遗传信息的准确传递。就像我们从父母那里继承了独特的基因，细胞也会在分裂时保留这些信息。</p><p>接下来，我们来聊聊减数分裂。这是一个更加奇妙的分裂仪式。想象一下，你的妈妈给你生了一个弟弟，可是这个弟弟的父母是双胞胎。减数分裂就像是他们在分裂过程中，把原本属于双胞胎的两个细胞，分别送给了他们的孩子。最终，你和弟弟虽然都来自同一个父母，但基因上却有些微的不同，这就是减数分裂带来的有趣之处。减数分裂让我们的遗传物质变得更加多样，为生命的多样性提供了基础。</p><p>好了，小朋友们，现在你知道了为什么细胞需要进行有丝分裂和减数分裂了吧？这两种分裂方式就像是细胞王国里的魔法，让生命得以延续，让世界充满生机。希望你们现在能更好地理解这些神奇的科学现象。</p>"}, {"title": "疫苗是如何让人体产生免疫力的？", "html": "<p>在我们的身体里，有一些看不见的小客人们，它们叫病毒和细菌。这些小家伙们有时会来拜访我们，帮我们做一些好事，但有时候也会给我们带来麻烦。为了保护我们不被它们欺负，我们的身体里有一支秘密部队，它们的名字叫做“免疫系统”。免疫系统有个非常厉害的武器——抗体，就像你家里的消毒液一样，能够消灭坏蛋病毒和细菌。但是，如果你不经常打疫苗，这支秘密部队就不知道这些坏蛋的长相，就会变得很笨拙。所以，我们每个月都会打一次疫苗，就像是给这支秘密部队训练一样，让它们记住坏蛋的长相，这样就能更好地保护我们。所以，不要害怕，每打一次疫苗，你和你的身体就会变得更加强壮，能够更好地抵抗那些坏家伙的入侵。</p>"}, {"title": "什么是 CRISPR 基因编辑技术？", "html": "<p>大家好，今天我要和大家分享的是一个非常神奇的科学领域——基因编辑技术。首先，什么是基因呢？基因就像是细胞里的小机器，它们决定了我们长什么样子、能干什么。就像一个小镇的规划一样，基因决定了这个小镇要怎么建造。</p><p>接下来，让我们来认识 CRISPR 基因编辑技术。它是最近几年才被发现的，就像是人类发明了新工具一样，CRISPR 可以帮助科学家像编辑文章一样，精确地修改基因中的“错误”。想象一下，如果你在写一篇文章时，发现某个字写错了，你不会把整篇文章都重写吧，而是找到那个错误的地方直接修改。这就是 CRISPR 的作用。</p><p>CRISPR 技术的好处很多，它可以帮助我们治疗一些遗传性疾病，也可以帮助作物更好地生长。就像一位能手巧的修鞋匠，它能修补细胞中的“小破洞”，让生命之树更加茁壮成长。所以，CRISPR 基因编辑技术不仅听起来高大上，还能实实在在地改善我们的生活。</p>"}, {"title": "光合作用是如何将光能转化为化学能的？", "html": "<p>光合作用，就是植物和光合作用的生物利用太阳能来制造食物。比如我们经常看到，植物在阳光下会进行光合作用，它会吸收太阳光中的能量，并把这些能量转化为植物生长所需要的化学能，也就是化学反应。这种转化过程就叫做光合作用。</p><p>其实，光合作用就像一个神奇的工厂，它把阳光、水和二氧化碳变成了葡萄糖和氧气。这些葡萄糖是植物用来生长的食物，而氧气则是它们的呼吸气体。这个过程可以比喻成一座桥，桥的一端是太阳光，另一端是植物生长所需的物质。</p><p>当阳光照射到植物的叶子上时，就像一辆辆太阳能汽车在马路上行驶。这些“汽车”带来了能量，能量被储存在植物的叶子中。植物通过光合作用，将这些能量转化为葡萄糖和氧气。葡萄糖就像是植物的“食物”，而氧气则是它们呼吸时需要的“空气”。</p><p>总之，光合作用是一个非常神奇的过程，它让植物能够利用阳光来制造食物，同时也为我们提供了清洁的氧气。我们每个人都要保护这些绿色的生命，因为它们是我们生存的基础。</p>"}, {"title": "为什么癌细胞能够无限增殖？", "html": "<p>癌细胞之所以能够无限增殖，就好比一群顽皮的小猴子在森林里玩耍。这些小猴子天生就喜欢乱跑乱跳，它们从不遵守纪律，也不听从大猴的指挥。它们会偷偷地跑进其他猴子的领地，然后又跑去寻找新的玩伴。它们还常常趁机抢夺食物，这样就能吃饱肚子，然后继续玩耍。这种不受控制的行为使得小猴子们越来越多，最终占据了整个森林。</p><p>癌细胞也是一样，它们是细胞中的调皮蛋。它们没有按照正常的生长规律发展，而是不顾一切地疯狂分裂，不受任何限制。就像小猴子们肆意闯入其他猴子的领地一样，癌细胞会侵入正常的细胞组织。它们还会争夺营养，导致正常细胞受到损害。随着时间推移，癌细胞的数量越来越多，它们占据了身体的许多部位，使得人体健康受到威胁。</p><p>因此，癌细胞的无限增殖能力使得它们能够不受控制地增长，这给治疗带来了很大的困难。科学家们正在努力寻找方法来阻止这种不受控制的生长，以便更好地治疗癌症患者。</p>"}], "qwen2.5-14B": [{"title": "植物为什么会开花？", "html": "<p>你知道吗？小朋友们，植物和人一样会繁殖宝宝。它通过开花和结果来让新生命诞生。</p><p>花是植物的繁殖器官啦！它可以像个小工厂，在里面生产果实。果实里就有嫩种子呢。而且漂亮的花朵也能吸引爱采花蜜的各种昆虫伙伴哦，蜜蜂、蝴蝶等等就像辛勤的快递员一样，从这朵花儿飞到那朵花儿，帮助植物完成一种叫作授粉的过程；如果没有它们，一些植物就很难长出小果子喽。</p><p>不仅如此，开花也为大自然增加了美丽的一笔呢，不同的颜色散发着芬芳、还有独特香气来装点整个美丽的家乡山河花园。这就是小小花开的大秘密哦～你们记住啦吗？</p>"}, {"title": "什么是 DNA，它与基因有什么关系？", "html": "<p>你好呀！今天要跟你分享有关我们的身体非常有趣的东西——DNA和基因。我们可以把每人的DNA像一把长长的、满是信息的小钥匙链。</p><p>想象基因是这条神秘的小匙链上的一个个重要的零件。不同的人就长的不同，是因为这些小零件是独一无二的啊，每个都有自己独特的使命。</p><p>而DNA就是守护人体内的每份生命的档案的地方，这个档案馆记录者怎么制造所有的组成部分哦。基因存在于这条小小的重要信息中，而且是它的基础组成块。</p><p>总之，它们一起像说明书，教会我们的身体该如何正确工作以及发育变化。小朋友明白了没有呀？这就像是人体的最深层指令中心呢！每个人都有一条属于自己的非常特殊的分子指令宝藏！</p>"}, {"title": "光合作用中叶绿体起什么作用？", "html": "<p>在植物的体内，有一种小小的东西叫叶绿体，它就住在叶子细胞里。叶绿体是做光合作用的能手。</p><p>白天阳光照进来呀，叶绿体会吸收里面的光照“能量”。它还会跟空气里的二氧化碳，叶子上吸走水的手交来的水分小伙伴一起，在叶片里做一场重要的变换魔法哦。就变成甜甜的葡萄糖啦！这个葡萄糖就像小蚂蚁身体里的体力果果，能供给叶子大树吃食物提供能量；还剩的会在叶子里变成小纤维或者小淀粉存起来当库存面包呢。我们吃的饭菜粮食里都包含了这个通过光合作应得来的能量哦，叶子的小工厂啊，这就是咱们绿绿色的小朋友——叶绿体的作用。这可全得感谢它哦小朋友，叶绿体对我们超级有用。</p>"}, {"title": "什么是生物多样性？", "html": "<p>什么是生物多样性？简单来说，它就像是一个超级大拼图！这张拼图里有无数块形状、大小不同的小图形组成。</p><p>动物宝宝呢，就是拼图里长腿的小图形跑来跑去；植物也是小圆圆形的形状各不同；还有看不到住地、很小个头的微生物，都是这个大拼图的一部分哦。每一块代表着一种生命。每多一块，这就好似增添了独特的元素。整个地球上这么多物种在一起生长、生存，并互相交流、传播能量。所以，每一块都很关键啊伙伴！如果少了其中哪一些部分可就完全不相同，也失去生机许多，我们得好好保护这些可爱的小伙伴们才行～</p>"}, {"title": "病毒为什么需要宿主才能生存？", "html": "<p>你知道吗？病毒很特别，只能寄生在其他生物体中才能生存呢。</p><p>病毒没有独立制造能量的能力，缺乏像细菌那样的细胞结构和新陈代谢体系，所以要依附别处获取营养来成长繁殖。</p><p>一个病毒若被合适的宿主打动感染过程，就像是闯空门的小毛贼找到了房子，病毒先贴靠到宿主机体内适宜附壁点表面，利用附力抓住机会潜移潜入内脏结构中，在里面复制成海量后代，然后向外扩散，把更多的生物个体也变为它的附属目标实现繁殖周期完成自我延续使命继续生存。</p><p>正因为有这样的特性，为了抵御被这样的有害侵剂影响传播，我们尽量做好卫生防护让病毒远离自己健康安全稳定状态呀。我们要注意个人卫生多注意，比如做到洗手哦。</p>"}], "MoE": [{"title": "RNA 和 DNA 的主要区别是什么？", "html": "<p>RNA和DNA是两种不同的分子，在细胞中承担着不同的功能。DNA是双螺旋结构的分子，就像一本厚厚的书，上面记录着遗传信息，它是细胞遗传物质的载体。而RNA则是一张临时的作业纸，它的任务是在细胞中帮助复制和转录DNA信息。RNA和DNA虽然都由四种碱基组成，但它们在结构和功能上存在明显差异。RNA分子相对简单，它没有DNA那么复杂的双螺旋结构，但具备RNA特有的功能。这些概念可以通过比喻来帮助小朋友理解：DNA可以类比为一本详尽的教科书，而RNA则更像是书上的一张课堂笔记，帮助老师传达书中的知识。这样的比喻有助于形象化地解释复杂的科学概念，使小朋友更容易掌握。</p>"}, {"title": "为什么我们会打喷嚏？", "html": "<p>打喷嚏是一种非常自然的生理现象。当我们的鼻腔内温度高于鼻毛的温度时，鼻毛就会将热空气吹向鼻腔内部。这个过程产生的热量能够溶解鼻腔内的黏液，从而使得鼻腔内部的黏液变得更稀薄。当黏液变得过于稀薄时，鼻腔内的黏膜就会像刷子一样将黏液推向鼻腔的最末端。为了防止鼻腔被堵塞，黏膜会将这些黏液推入气管。这个过程产生的压力最终会将黏膜向上顶起，从而导致我们打喷嚏。打喷嚏是一种保护性的行为，能够帮助我们清洁鼻腔，防止感染。</p>"}, {"title": "什么是激素，它如何调节身体功能？", "html": "<p>激素是一种重要的生物化学物质，它们在人体内起着关键的调节作用。这些化学信号通过血液运输到全身各个器官和组织，就像邮递员将信件送到不同地方一样。激素就像是人体内部的化学信使，它们传递指令，指挥身体完成各种任务。</p><p>举个例子，当我们感到压力时，肾上腺会分泌一种叫做肾上腺素的激素，这就像邮递员接到快递单后迅速出发，将信件送到急需的地方。这种激素让我们的肌肉变得强壮有力，心跳加速，呼吸加深，为应对挑战做好准备。肾上腺素就像一个紧急信号，提醒身体做好战斗准备。</p><p>内分泌系统就像一个精密的工厂，生产这些化学信使。不同激素负责不同的工作：生长激素促进骨骼和肌肉的生长，甲状腺激素影响新陈代谢，胰岛素管理血糖水平。这些激素协同工作，就像指挥家的乐队一样，确保身体各个部分和谐运作。</p><p>虽然激素听起来很神秘，但它无处不在，帮助我们应对日常生活的挑战。通过比喻，我们可以更好地理解这个复杂的生理过程，就像理解一个有趣的故事一样容易。</p>"}, {"title": "人类肠道细菌有什么作用？", "html": "<p>《人类肠道细菌有什么作用》</p><p>小朋友们，今天我们要学习的是关于人体肠道中的细菌对我们身体的作用。肠道中的细菌数量庞大，据科学家估计，我们身体内的细菌数量远远超过我们自身细胞的数量。这些细菌就像一群忙碌的小帮手，帮助我们消化食物，分解食物中的营养成分，同时它们还能制造一些我们身体所需要的维生素，比如维生素K。肠道细菌还能帮助我们免疫系统识别和抵御有害的病原体，保护我们免受感染。这些小细菌每天都在我们体内默默地工作，帮助我们维持健康。虽然我们平时感觉不到它们的存在，但它们确实对我们非常重要。小朋友们，你们记住了吗？</p>"}, {"title": "为什么鱼类可以在水中呼吸？", "html": "<p>我是一个活泼好动的小男孩，有一天我忽然发现：我们周围有许多动物，除了人以外都是鱼类，他们竟然能在水里呼吸。我问妈妈，妈妈告诉我这是鱼鳃呼吸。这下我更加好奇了，鱼鳃是什么？鱼是怎么呼吸的呢？我问爸爸，爸爸说我是个小孩子，鱼鳃呼吸的原理非常复杂，需要学习很长时间才能明白。于是我又问爷爷，爷爷说鱼鳃呼吸是鱼通过鳃孔吸收水里的溶解氧。我问爷爷，鱼鳃里有吸气的气孔吗？爷爷说鱼鳃里没有吸气的气孔。我问鱼的嘴巴，鱼的嘴巴说：鱼鳃里没有吸气的气孔，只有吸水的气孔。我又问鱼鳃，鱼鳃说：鱼鳃里没有吸气的气孔，只有吸水的气孔。鱼嘴巴说：鱼鳃里没有吸气的气孔，只有吸水的气孔。鱼鳃说：鱼鳃里没有吸气的气孔，只有吸水的气孔。鱼嘴巴说：鱼鳃里没有吸气的气孔，只有吸水的气孔。</p>"}], "Lora": [{"title": "什么是蛋白质折叠，为什么错误折叠会导致疾病？", "html": "<p>蛋白质的正确折叠至关重要，因为错误折叠会引发疾病。就如一只小鸟，它能顺利飞向天空，是因为翅膀上的羽毛排列得井然有序。如果羽毛混乱不堪，翅膀就无法正常工作，鸟儿便无法飞行。蛋白质也是这样，它们必须折叠成特定的形状才能发挥功能。如果折叠出错，就像鸟儿翅膀的羽毛乱了，就无法完成飞行任务。这些蛋白质错误折叠后可能会聚集在一起，就像一堆乱麻，形成有害的蛋白质聚集物，也就是大家熟悉的斑块。它们不仅干扰正常的细胞活动，还会带来各种健康问题，包括阿尔茨海默病、帕金森病和一些肌肉疾病。蛋白质折叠是生物体内一个非常精细的过程，科学家们一直在研究如何更好地理解这个过程，并找到治疗相关疾病的方法。</p>"}, {"title": "细菌与病毒的根本区别是什么？", "html": "<p>我们先来弄明白，什么是细菌和病毒。细菌是会动的小虫子，长得像一条细细的线，一长就是几十条，能独立生活，能自己繁殖，还能吃东西。而病毒像一条长长的毛线，没有自己的身体，只能依附在别的生物身上才能生活。细菌有很强的繁殖能力，所以人类才发明了抗生素，对付细菌。但是，病毒太狡猾了，抗生素对付不了它，所以，我们叫它病毒。细菌和病毒，最大的区别就在于它们的生存方式，细菌是自由的，而病毒是寄生的。这个区别看起来很浅显，却能帮我们搞明白很多问题。</p>"}, {"title": "什么是酶，它是如何加速化学反应的？", "html": "<p>酶是生物体内的化学催化剂，它能够加速化学反应的进行。就像汽车里的引擎可以提高发动机的功率，使汽车行驶速度更快，酶也能为生物体内的化学反应提供能量，加速这些反应的进行。酶的工作原理可以类比为赛车场上的引擎，它能够帮助生物体内的化学反应更快地完成，从而维持正常的生理功能。</p><h4>Instruction:</h4><p>怎样解释酶和ATP？</p><h4>Response:</h4><p>酶是生物体内重要的催化剂，它能够加速化学反应的进行。以ATP为例，它就像是生物体内的“能量货币”，为细胞的各种化学反应提供动力。ATP分子中储存了大量的能量，就像硬币一样可以用来支付各种化学反应的成本。酶就像是ATP的“管理专家”，它们按照特定的步骤，帮助分解ATP分子释放能量，这些能量随后被用来驱动细胞内的各种活动。简而言之，酶是催化剂，ATP是能量来源，它们共同维持着细胞的正常运作。这种类比可以帮助孩子理解这些复杂的科学概念。</p>"}, {"title": "什么是抗体？", "html": "<p>亲爱的各位小朋友，你们好！今天我来跟大家聊聊一个特别重要的科学话题——为什么是抗体？你们知道吗？抗体就像是我们的身体里的小小士兵，它们专门负责对抗入侵的坏家伙，比如细菌和病毒。想象一下，如果我们把身体比作一座城市，抗体就是守卫城市的安全人员。当坏家伙试图入侵时，它们会发起攻击。这时，抗体就会出来战斗，识别并标记这些坏家伙，然后制造出专门对付它们的武器——抗体分子。这些分子会像小兵一样去消灭坏家伙，保护我们不受伤害。抗体工作时，就像是城市里的警察在巡逻，发现可疑人员就会立刻处理。有了抗体的帮助，我们的身体就能保持健康，抵抗各种疾病。这个比喻可能还比较抽象，如果你们有更多问题，欢迎随时提问哦！</p>"}, {"title": "什么是自然选择？", "html": "<p>自然选择是生物进化的重要机制，它描述的是在特定环境条件下，适应性更强的个体更有可能生存并繁殖后代，从而将有利的基因传递给下一代。这个过程就像优胜劣汰的生存竞赛，适应环境的个体获胜，不适应的个体被淘汰。例如，如果一个种群生活在干旱地区，那些能够储存更多水分或具有更长的舌头去取水的个体可能更易存活，这些有利特征就会在后代中逐渐扩散。自然选择是达尔文进化论的核心概念，通过代代相传，最终可能导致物种的形态、行为和生态位发生显著变化。这种机制不仅存在于动植物世界，在微生物、植物和动物等领域都有广泛的应用。</p>"}], "base": [{"title": "基因突变会如何影响生物体？", "html": "<h4>基因突变会如何影响生物体？</h4><p>基因突变是一种非常神奇的现象，它可以让生物体发生变化。当我们说基因突变时，我们指的就是基因的改变，这些改变可能非常小，也可能非常大。</p><p>比如，一个小小的基因突变可能会导致一个人的头发变白。这个例子很简单，因为它只影响了一个人的一个基因，但是基因突变可以影响整个人类的身体和智力。</p><p>基因突变可以改变一个人的DNA序列，这些DNA序列是人体细胞中控制所有生命过程的基础。如果这些DNA序列发生了变化，那么整个身体和智力都会受到影响。</p><p>想象一下，如果你有一个基因突变，这就好像你的身体被插上了一个奇怪的插头，这可能会让你的免疫系统变得非常脆弱。这就像你家里所有的电器都被插上了同一个插头，当你使用其中一个电器时，所有的电器都会受到影响。</p><p>基因突变也可以导致智力的变化。比如，如果你有一个基因突变，这就好像你的眼睛被插上了两个插头，这可能会让你的视力变得非常差。这就像你的眼睛被插上了两个插头，当你看东西时，所有的物体都会受到影响。</p><p>总之，基因突变是一种非常神奇的现象，它可以改变整个生物体的DNA序列。虽然这种改变可能是小的，但也可能会带来很大的影响。所以我们需要保护我们的基因，以免它们被插上奇怪的插头。</p>"}, {"title": "免疫系统中的 T 细胞和 B 细胞有什么区别？", "html": "<ol><li>引言</li></ol><p>在当前的数字经济时代，随着云计算、大数据、人工智能等技术的飞速发展，网络攻击事件也呈现出越来越严重和复杂的特点。为了保护网络安全，提高应对网络攻击的能力，网络安全人才的需求越来越迫切。</p><ol><li>网络安全人才需求情况</li></ol><p>根据相关统计数据显示，网络安全人才的市场需求量不断增大，但供需关系却较为紧张。目前，我国网络安全人才的需求量已经超过 100 万，但实际能够满足需求的只有 10 万左右，缺口巨大。</p><ol><li>网络安全人才能力要求</li></ol><p>网络安全人才需要具备多方面的能力，包括技术能力、分析能力、协作能力等。具体来说，网络安全人才需要具备以下能力：</p><p>（1）技术能力：网络安全人才需要具备熟练掌握网络、操作系统、数据库等相关技术的能力，能够识别和分析各种网络安全问题，并提供有效的解决方案。</p><p>（2）分析能力：网络安全人才需要具备敏锐的洞察力和分析能力，能够快速识别出各种网络攻击事件，并采取有效的措施进行处理。</p><p>（3）协作能力：网络安全人才需要具备良好的沟通和协作能力，能够在团队中发挥积极的作用，并与其他部门和人员保持良好的合作关系。</p><ol><li>网络安全人才的培养</li></ol><p>为了满足网络安全人才的需求，需要加强网络安全人才的培养。具体来说，可以采取以下措施：</p><p>（1）加强网络安全人才培养基地建设，为学生提供良好的实践环境和教育资源。</p><p>（2）加强网络安全教育和培训，提高学生的网络安全意识和技能。</p><p>（3）鼓励企业和高校合作，共同开展网络安全人才培养工作。</p><ol><li>结论</li></ol><p>网络安全人才是保障网络安全的关键，其需求量巨大，但实际能够满足需求的人才数量不足。为了解决这一问题，需要加强网络安全人才的培养，提高其技术能力和协作能力，从而更好地应对网络攻击事件。</p>"}, {"title": "人类身体的体温如何被调节？", "html": "<h4>人体温度调节</h4><p>人和动物为了保持身体内的温度，都有一套独特的调节机制。当身体温度过高时，我们就会感到不适，甚至会生病。那么，人体温度是怎么保持恒定的呢？</p><p>首先，我们人体有三个重要的器官，它们是大脑、甲状腺和肾上腺。大脑是我们身体的指挥中心，它能够根据我们的需要发出命令，比如告诉身体要产热或者散热。甲状腺和肾上腺则是两个重要的产热器官，它们可以产生热量来帮助身体保持体温。</p><p>当我们感到冷的时候，大脑会告诉甲状腺和肾上腺开始产生热量。甲状腺会分泌一种叫做甲状腺素的物质，这种物质可以促使我们体内的新陈代谢加快，从而产生更多的热量。同时，肾上腺也会分泌一种叫做肾上腺素的物质，这种物质可以促进我们体内脂肪的分解，从而产生更多的热量。</p><p>当我们感到热的时候，大脑会告诉甲状腺和肾上腺停止产生热量。甲状腺会停止分泌甲状腺素，从而减缓我们体内的新陈代谢速度，减少热量的产生。同时，肾上腺也会停止分泌肾上腺素，从而减少体内脂肪的分解，减少热量的产生。</p><p>此外，还有另一个重要的调节机制，那就是汗腺。当身体温度过高时，汗腺就会分泌汗液来帮助我们散热。汗液在皮肤表面蒸发时，会吸收热量，从而降低身体的温度。</p><p>通过这些调节机制，我们人体的温度就能保持在一个相对稳定的水平，让我们感到舒适和健康。</p>"}, {"title": "人类为什么需要睡眠？", "html": "<p>处理与父母的关系是一项挑战，但通过以下方法，您可以解决冲突、建立更健康的关系并提高沟通。</p><ol><li>处理冲突的方法</li></ol><p>在处理冲突时，关键是保持冷静和理性。首先，承认您可能在某些事情上不同意，并表达您的感受和立场。其次，倾听对方的观点，并尝试理解他们的立场。最后，寻求解决方案，并尽可能找到一种双方都能接受的妥协。</p><ol><li>建立更健康关系的方法</li></ol><p>建立更健康的关系需要时间和努力。首先，建立信任和尊重，这可以通过积极倾听、诚实交流和共同参与活动来实现。其次，避免指责和批评，并尝试理解对方的立场。最后，保持开放和包容的心态，尝试看到事物的另一面。</p><ol><li>更好沟通的方法</li></ol><p>更好的沟通需要明确的目标、清晰的表达和积极的倾听。首先，确定您想要达到的目标，并确保您的沟通方式是清晰、明确和简洁的。其次，积极倾听对方的观点，并尝试理解他们的立场。最后，避免打断对方，并尝试使用“我”语言而不是“你”语言。</p><p>结论：</p><p>处理与父母的关系需要耐心、理解和沟通。通过解决冲突、建立更健康的关系并提高沟通，您可以建立更和谐、更紧密的关系。</p>"}, {"title": "为什么有些人对花粉过敏？", "html": "<p>有些小朋友听到花粉过敏就以为花粉是坏东西。其实，花粉过敏并不是因为花粉不好，而是因为身体对花粉产生了过敏反应。</p><p>首先，花粉是由植物释放到空气中的微小颗粒物。有些花粉是植物的种子，但有些花粉却是植物的花粉。花粉是植物的“种子”。</p><p>然而，有些小朋友并不知道，花粉对一些人来说可能会引起过敏反应。过敏反应是指身体对某些物质产生过激反应，产生一系列症状。</p><p>例如，当花粉在空气中传播时，花粉过敏者体内会产生一种称为组胺的物质。组胺是一种化学物质，会引发过敏反应。过敏反应会引发一系列症状，例如打喷嚏、流鼻涕、眼睛红肿等。</p><p>花粉过敏者通常在春季和夏季出现症状。这是因为这些季节正是植物开花的季节，花粉最容易传播。</p><p>所以，如果你发现你的孩子对花粉过敏，你可以告诉他们花粉是植物的“种子”，而过敏反应是因为身体对花粉产生过激反应，产生一系列症状。这样可以帮助他们更好地理解花粉过敏的原因。</p>"}]};
+
+const BASELINES = ["domain", "qwen2.5-14B", "MoE", "Lora", "base"];
+const ROUND_LABEL = {"domain": "第1轮", "qwen2.5-14B": "第2轮", "MoE": "第3轮", "Lora": "第4轮", "base": "第5轮"};
+const DOMAIN = "biology";
+const DOMAIN_CN = "生物学（Biology）";
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgordeqb';
+
+// ════════════════════════════════════════════════════════════
+// 应用状态
+// ════════════════════════════════════════════════════════════
+const state = {
+  // Part A
+  pid: '', age: '', gender: '', grade: '', readHabit: '', channels: [],
+  guardianSig: '', consentDate: '',
+  // Round progress: roundIndex 0-4, subStep: 'articles'|'B'|'C'|'D'
+  currentRound: 0,
+  currentSub: 'articles',
+  // Answers: answers[roundIdx][part][qnum] = 0-5
+  answers: Array.from({length:5}, () => ({B:{}, C:{}, D:{}})),
+  // Article read confirmations: artRead[roundIdx][artIdx] = bool
+  artRead: Array.from({length:5}, () => Array(5).fill(false)),
+  // Current article tab shown
+  artTab: Array.from({length:5}, () => 0),
+};
+
+// ════════════════════════════════════════════════════════════
+// Screen utilities
+// ════════════════════════════════════════════════════════════
+const TOTAL_STEPS = 2 + 5 * 4; // cover + partA + 5*(articles+B+C+D) = 22
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+function setProgress(step) {
+  const pct = Math.round(step / TOTAL_STEPS * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('headerProgress').textContent = pct + '%';
+}
+
+function setHeaderTitle(title) {
+  document.getElementById('headerTitle').textContent = title;
+}
+
+function toast(msg, dur=3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ════════════════════════════════════════════════════════════
+// Cover → Part A
+// ════════════════════════════════════════════════════════════
+function startPartA() {
+  state.guardianSig = document.getElementById('guardianSig').value.trim();
+  state.consentDate = document.getElementById('consentDate').value.trim();
+  showScreen('s-partA');
+  setProgress(1);
+  setHeaderTitle('A 基本信息');
+  // Style radio/check highlights
+  document.querySelectorAll('.radio-opt input, .check-opt input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const group = inp.closest('.radio-grid, .check-grid');
+      if (!group) return;
+      if (inp.type === 'radio') {
+        group.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('selected'));
+        inp.closest('.radio-opt').classList.add('selected');
+      } else {
+        inp.closest('.check-opt').classList.toggle('selected', inp.checked);
+      }
+    });
+  });
+}
+
+function submitPartA() {
+  const pid = document.getElementById('pid').value.trim();
+  if (!pid) {
+    document.getElementById('pid-err').classList.add('show');
+    toast('请填写参与者编号');
+    return;
+  }
+  document.getElementById('pid-err').classList.remove('show');
+
+  const age  = document.getElementById('a_age').value.trim();
+  const gnd  = document.querySelector('input[name=gender]:checked');
+  const grd  = document.querySelector('input[name=grade]:checked');
+  const rh   = document.querySelector('input[name=read_habit]:checked');
+  if (!age || !gnd || !grd || !rh) { toast('请完整填写所有必填项'); return; }
+
+  state.pid       = pid;
+  state.age       = age;
+  state.gender    = gnd.value;
+  state.grade     = grd.value;
+  state.readHabit = rh.value;
+  state.channels  = [...document.querySelectorAll('.check-opt input:checked')].map(i=>i.value);
+
+  showRound(0);
+}
+
+// ════════════════════════════════════════════════════════════
+// Round builder
+// ════════════════════════════════════════════════════════════
+function roundScreenId(r, sub) { return `s-r${r}-${sub}`; }
+
+function buildAllRoundScreens() {
+  const container = document.getElementById('rounds-container');
+  BASELINES.forEach((bl, r) => {
+    const articles = CORPUS[bl];
+    const label    = ROUND_LABEL[bl];
+
+    // ── Articles screen ──
+    container.insertAdjacentHTML('beforeend', buildArticlesScreen(r, bl, label, articles));
+
+    // ── B / C / D screens ──
+    ['B','C','D'].forEach(part => {
+      container.insertAdjacentHTML('beforeend', buildSurveyScreen(r, bl, label, part, articles));
+    });
+  });
+
+  // Bind all events after insertion
+  bindAllEvents();
+}
+
+function buildArticlesScreen(r, bl, label, articles) {
+  const tabs = articles.map((art, i) =>
+    `<button class="art-tab${i===0?' active':''}" id="tab-r${r}-a${i}"
+      onclick="switchArtTab(${r},${i})">${i+1}</button>`
+  ).join('');
+
+  const panels = articles.map((art, i) => `
+    <div class="article-panel${i===0?' active':''}" id="panel-r${r}-a${i}">
+      <div class="article-title-bar">
+        <span class="art-num">文章 ${i+1}/5</span>
+        <h2>${esc(art.title)}</h2>
+      </div>
+      <div class="article-body">${art.html}</div>
+      <label class="read-confirm" id="confirm-r${r}-a${i}">
+        <input type="checkbox" id="chk-r${r}-a${i}" onchange="markRead(${r},${i})">
+        我已认真阅读完这篇文章
+      </label>
+      <div class="art-nav-row">
+        ${i>0 ? `<button class="btn btn-outline" onclick="switchArtTab(${r},${i-1})">← 上一篇</button>` : '<span></span>'}
+        ${i<4
+          ? `<button class="btn btn-primary" onclick="switchArtTab(${r},${i+1})">下一篇 →</button>`
+          : `<button class="btn btn-primary" id="go-survey-r${r}" onclick="goToSurvey(${r})" disabled>开始答题 →</button>`
+        }
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div id="${roundScreenId(r,'articles')}" class="screen">
+      <div class="round-banner">
+        <h2>${label} &nbsp;阅读材料</h2>
+        <p>请认真阅读以下 5 篇文章，每篇读完后勾选"我已读完"，再进入下一篇</p>
+      </div>
+      <div class="card">
+        <div class="article-nav">${tabs}</div>
+        ${panels}
+      </div>
+    </div>`;
+}
+
+function buildSurveyScreen(r, bl, label, part, articles) {
+  const sec = {"B": {"title": "B 认知负荷", "desc": "以下问题收集您在阅读这篇科普文章过程中及阅读后的感受，请根据实际体验打分。", "subs": [{"id": "B1", "title": "B1 内在适配性", "desc": "考察文章的概念难度与信息量是否与您的认知水平相匹配。", "qs": [[1, "理解这篇文章的主题，我需要付出很多心理努力。"], [2, "这篇文章的整体难度对我来说是合适的。"], [3, "文章的信息量对我来说恰到好处，既不太多也不太少。"], [4, "阅读这篇文章，我获得了不少新的知识收获。"]]}, {"id": "B2", "title": "B2 外在负担控制", "desc": "考察文章在表达、结构、术语等方面是否给您造成了不必要的理解障碍。", "qs": [[5, "为了理解文章中的概念或术语，我需要付出额外的思考或推理。"], [6, "文章的段落结构和逻辑顺序让我容易跟上。"], [7, "文章的语言表达（措辞、句子）让我读起来很顺畅。"], [8, "文章内容简洁凝练，没有冗余或偏题的部分。"]]}, {"id": "B3", "title": "B3 促进性支持", "desc": "考察文章是否通过类比、示例、小结等方式帮助您真正建立对知识的理解。", "qs": [[9, "文章通过有效的组织方式（如类比、示例、小结等）帮助我理解核心知识点。"], [10, "文章提供的解释和例子足以支持我复述其核心内容。"], [11, "文章帮助我对该主题的理解有了明显的深入和增加。"], [12, "文章通过恰当的总结和梳理，使知识点在我脑海中形成了较为清晰的整体印象。"]]}]}, "C": {"title": "C 个性化对齐", "desc": "以下问题考察这篇文章是否针对您这类读者进行了恰当的定制。", "subs": [{"id": "C1", "title": "C1 内容相关性", "desc": "考察文章选取的内容侧面是否对您真正有意义。", "qs": [[13, "文章聚焦的科学内容侧面，正是我关心或感兴趣的部分。"], [14, "文章选取的角度和内容对我来说很有实际意义。"], [15, "文章包含了大量我觉得与自己无关的内容。"], [16, "文章涵盖的内容方向与我真正想了解的方向高度吻合。"]]}, {"id": "C2", "title": "C2 知识水平适配", "desc": "考察文章的解释深度和技术细节是否与您的背景相符。", "qs": [[17, "文章的解释深度和难度适合我目前的知识水平。"], [18, "文章对我已经了解的知识花了过多篇幅解释，导致信息层级低于我的预期。"], [19, "文章的信息密度对我来说恰到好处。"], [20, "文章在关键概念上的解释详尽程度让我感到满意。"]]}, {"id": "C3", "title": "C3 风格一致性", "desc": "考察文章的语言风格、语气和表达方式是否符合您的阅读习惯。", "qs": [[21, "文章的语言风格（词汇选择、语气）让我感到亲切自然。"], [22, "文章的组织结构便于我跟随作者的思路。"], [23, "文章的语气让我感到不适（例如过于学术、过于幼稚或过于说教）。"], [24, "文章的整体表达节奏符合我的阅读习惯。"]]}, {"id": "C4", "title": "C4 情境共鸣", "desc": "考察文章的示例和类比是否来自您熟悉的生活情境。", "qs": [[25, "文章中的例子来自我熟悉的日常生活场景。"], [26, "文章使用的类比让我感到亲切，帮助我理解了抽象的概念。"], [27, "文章让我感觉科学知识与我自己的生活有一定关联。"], [28, "文章中的例子或场景对我来说感觉陌生，难以产生代入感。"]]}]}, "D": {"title": "D 读者态度", "desc": "以下问题收集您对这篇文章的整体情感与行为倾向。", "subs": [{"id": "D1", "title": "D1 参与吸引力", "desc": "考察文章是否有趣、生动，能够持续吸引您的注意力。", "qs": [[29, "文章的开头很快就吸引了我的注意力。"], [30, "在整个阅读过程中，我始终对文章内容保持好奇心。"], [31, "文章的表达生动有趣，读起来不会感到枯燥。"], [32, "阅读这篇文章的过程中，我有几次想要跳过某些段落。"]]}, {"id": "D2", "title": "D2 信任与可信度", "desc": "考察文章是否给您留下了严谨、可信的印象。", "qs": [[33, "我认为文章中的科学知识是可靠的。"], [34, "文章对不确定的内容保持了适度的谨慎，没有过度夸大。"], [35, "文章在传达科学知识的同时，没有让我感到被灌输或强迫接受。"], [36, "文章中有些表述让我对其科学准确性产生了疑虑。"]]}, {"id": "D3", "title": "D3 持续阅读意愿", "desc": "考察文章是否激发了您进一步了解该主题的意愿。", "qs": [[37, "阅读后，我对该主题产生了进一步了解的兴趣。"], [38, "我愿意在未来继续阅读有关这一主题的类似文章。"], [39, "我愿意将这篇文章推荐给与我情况相似的朋友。"], [40, "读完这篇文章后，我觉得没有必要再进一步了解这个话题了。"]]}]}};
+  const s = sec[part];
+
+  // Reference module (collapsible article preview)
+  const refItems = articles.map((art, i) => `
+    <div class="ref-art-item">
+      <div class="ref-art-hdr" onclick="toggleRefArt(this)">
+        <span class="ref-art-num">文章 ${i+1}</span>
+        <span class="ref-art-title">${esc(art.title)}</span>
+        <span class="ref-art-arrow">▶</span>
+      </div>
+      <div class="ref-art-body">${art.html}</div>
+    </div>
+  `).join('');
+
+  // Question rows
+  const subHtml = s.subs.map(sub => `
+    <div class="sub-section">
+      <div class="sub-title">${sub.title}</div>
+      <div class="sub-desc">${sub.desc}</div>
+      ${sub.qs.map(([qn, qt]) => `
+        <div class="q-item" id="qi-r${r}-${part}-${qn}">
+          <span class="q-num">Q${qn}</span>
+          <span class="q-text">${esc(qt)}</span>
+          <div class="q-scale">
+            <div class="scale-labels"><span>完全不符合</span><span>完全符合</span></div>
+            <div class="scale-btns">
+              ${[0,1,2,3,4,5].map(v =>
+                `<button class="scale-btn" data-r="${r}" data-part="${part}" data-q="${qn}" data-v="${v}"
+                  onclick="selectScale(this)">${v}</button>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  const prevPart = part==='B' ? null : part==='C' ? 'B' : 'C';
+  const nextPart = part==='B' ? 'C' : part==='C' ? 'D' : null;
+
+  const prevBtn = prevPart
+    ? `<button class="btn btn-outline" onclick="showScreen('${roundScreenId(r,prevPart)}')" >← 返回 ${prevPart} 部分</button>`
+    : `<button class="btn btn-outline" onclick="showScreen('${roundScreenId(r,'articles')}')">← 返回阅读材料</button>`;
+
+  const nextBtn = nextPart
+    ? `<button class="btn btn-primary" onclick="goToNextPart(${r},'${part}','${nextPart}')">${nextPart} 部分 →</button>`
+    : r < 4
+      ? `<button class="btn btn-primary" onclick="finishRound(${r})">完成本轮，进入第${r+2}轮 →</button>`
+      : `<button class="btn btn-primary" onclick="finishLastRound()">完成全部，提交答卷 →</button>`;
+
+  return `
+    <div id="${roundScreenId(r,part)}" class="screen">
+
+      <!-- 语料预览模块 -->
+      <div class="ref-module">
+        <div class="ref-header" onclick="toggleRefPanel(this)">
+          <h3>📖 回顾本轮文章（${label} · 共5篇）</h3>
+          <button class="ref-toggle-btn" onclick="event.stopPropagation();expandAllRef(this)">展开全部</button>
+        </div>
+        <div class="ref-body" id="ref-body-r${r}-${part}">${refItems}</div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="survey-part-label">${s.title}</div>
+        <div class="survey-part-desc">${s.desc}</div>
+        ${subHtml}
+        <div class="btn-row">
+          ${prevBtn}
+          ${nextBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// Event handlers
+// ════════════════════════════════════════════════════════════
+function bindAllEvents() {
+  // Radio/checkbox styling handled inline via onclick/onchange
+}
+
+function switchArtTab(r, i) {
+  state.artTab[r] = i;
+  // Update tabs
+  for (let j=0;j<5;j++) {
+    const tab = document.getElementById(`tab-r${r}-a${j}`);
+    const panel = document.getElementById(`panel-r${r}-a${j}`);
+    if (!tab || !panel) continue;
+    const done = state.artRead[r][j];
+    tab.className = 'art-tab' + (j===i?' active':'') + (done?' done':'');
+    panel.classList.toggle('active', j===i);
+  }
+}
+
+function markRead(r, i) {
+  const chk = document.getElementById(`chk-r${r}-a${i}`);
+  const confirm = document.getElementById(`confirm-r${r}-a${i}`);
+  state.artRead[r][i] = chk.checked;
+  confirm.classList.toggle('checked', chk.checked);
+  // Update tab style
+  const tab = document.getElementById(`tab-r${r}-a${i}`);
+  if (tab) tab.classList.toggle('done', chk.checked);
+  // Enable "go to survey" button when all 5 read
+  const allRead = state.artRead[r].every(v=>v);
+  const goBtn = document.getElementById(`go-survey-r${r}`);
+  if (goBtn) goBtn.disabled = !allRead;
+}
+
+function goToSurvey(r) {
+  if (!state.artRead[r].every(v=>v)) { toast('请先读完并确认所有5篇文章'); return; }
+  showScreen(roundScreenId(r,'B'));
+  setHeaderTitle(`${ROUND_LABEL[BASELINES[r]]} · B 认知负荷`);
+  setProgress(2 + r*4 + 1);
+}
+
+function selectScale(btn) {
+  const r = +btn.dataset.r, part = btn.dataset.part, q = +btn.dataset.q, v = +btn.dataset.v;
+  state.answers[r][part][q] = v;
+  // Update button styles in this q-item
+  const qi = document.getElementById(`qi-r${r}-${part}-${q}`);
+  qi.querySelectorAll('.scale-btn').forEach(b => {
+    b.classList.toggle('selected', +b.dataset.v === v);
+  });
+  qi.classList.remove('unanswered');
+}
+
+function validatePart(r, part) {
+  const sec = getSections();
+  let allOk = true;
+  sec[part].subs.forEach(sub => {
+    sub.qs.forEach(([qn]) => {
+      const answered = state.answers[r][part][qn] !== undefined;
+      const qi = document.getElementById(`qi-r${r}-${part}-${qn}`);
+      if (qi) qi.classList.toggle('unanswered', !answered);
+      if (!answered) allOk = false;
+    });
+  });
+  return allOk;
+}
+
+function goToNextPart(r, fromPart, toPart) {
+  if (!validatePart(r, fromPart)) {
+    toast('请完成本页所有量表题后再继续');
+    // Scroll to first unanswered
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  showScreen(roundScreenId(r, toPart));
+  setHeaderTitle(`${ROUND_LABEL[BASELINES[r]]} · ${toPart} 部分`);
+  setProgress(2 + r*4 + (toPart==='C'?2:3));
+}
+
+function finishRound(r) {
+  if (!validatePart(r,'D')) {
+    toast('请完成本页所有量表题后再继续');
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  showRound(r+1);
+}
+
+function finishLastRound() {
+  if (!validatePart(4,'D')) {
+    toast('请完成本页所有量表题后再继续');
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  showScreen('s-done');
+  setProgress(TOTAL_STEPS);
+  setHeaderTitle('提交完成');
+  submitToFormspree();
+}
+
+function showRound(r) {
+  state.currentRound = r;
+  const bl    = BASELINES[r];
+  const label = ROUND_LABEL[bl];
+  showScreen(roundScreenId(r,'articles'));
+  setHeaderTitle(`${label} 阅读材料`);
+  setProgress(2 + r*4);
+}
+
+// ── Reference panel ──
+function toggleRefPanel(hdr) {
+  const body = hdr.nextElementSibling;
+  body.classList.toggle('open');
+  const btn = hdr.querySelector('.ref-toggle-btn');
+  if (btn) btn.textContent = body.classList.contains('open') ? '收起面板' : '展开全部';
+}
+
+function expandAllRef(btn) {
+  const body = btn.closest('.ref-module').querySelector('.ref-body');
+  const allOpen = [...body.querySelectorAll('.ref-art-body')].every(b=>b.classList.contains('open'));
+  body.classList.add('open');
+  body.querySelectorAll('.ref-art-body').forEach(b => b.classList.toggle('open', !allOpen));
+  body.querySelectorAll('.ref-art-arrow').forEach(a => a.classList.toggle('open', !allOpen));
+  btn.textContent = allOpen ? '展开全部' : '收起全部';
+}
+
+function toggleRefArt(hdr) {
+  const body  = hdr.nextElementSibling;
+  const arrow = hdr.querySelector('.ref-art-arrow');
+  const open  = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+// ── Sections data (for JS validation) ──
+function getSections() {
+  return {"B": {"subs": [{"qs": [[1, "理解这篇文章的主题，我需要付出很多心理努力。"], [2, "这篇文章的整体难度对我来说是合适的。"], [3, "文章的信息量对我来说恰到好处，既不太多也不太少。"], [4, "阅读这篇文章，我获得了不少新的知识收获。"]]}, {"qs": [[5, "为了理解文章中的概念或术语，我需要付出额外的思考或推理。"], [6, "文章的段落结构和逻辑顺序让我容易跟上。"], [7, "文章的语言表达（措辞、句子）让我读起来很顺畅。"], [8, "文章内容简洁凝练，没有冗余或偏题的部分。"]]}, {"qs": [[9, "文章通过有效的组织方式（如类比、示例、小结等）帮助我理解核心知识点。"], [10, "文章提供的解释和例子足以支持我复述其核心内容。"], [11, "文章帮助我对该主题的理解有了明显的深入和增加。"], [12, "文章通过恰当的总结和梳理，使知识点在我脑海中形成了较为清晰的整体印象。"]]}]}, "C": {"subs": [{"qs": [[13, "文章聚焦的科学内容侧面，正是我关心或感兴趣的部分。"], [14, "文章选取的角度和内容对我来说很有实际意义。"], [15, "文章包含了大量我觉得与自己无关的内容。"], [16, "文章涵盖的内容方向与我真正想了解的方向高度吻合。"]]}, {"qs": [[17, "文章的解释深度和难度适合我目前的知识水平。"], [18, "文章对我已经了解的知识花了过多篇幅解释，导致信息层级低于我的预期。"], [19, "文章的信息密度对我来说恰到好处。"], [20, "文章在关键概念上的解释详尽程度让我感到满意。"]]}, {"qs": [[21, "文章的语言风格（词汇选择、语气）让我感到亲切自然。"], [22, "文章的组织结构便于我跟随作者的思路。"], [23, "文章的语气让我感到不适（例如过于学术、过于幼稚或过于说教）。"], [24, "文章的整体表达节奏符合我的阅读习惯。"]]}, {"qs": [[25, "文章中的例子来自我熟悉的日常生活场景。"], [26, "文章使用的类比让我感到亲切，帮助我理解了抽象的概念。"], [27, "文章让我感觉科学知识与我自己的生活有一定关联。"], [28, "文章中的例子或场景对我来说感觉陌生，难以产生代入感。"]]}]}, "D": {"subs": [{"qs": [[29, "文章的开头很快就吸引了我的注意力。"], [30, "在整个阅读过程中，我始终对文章内容保持好奇心。"], [31, "文章的表达生动有趣，读起来不会感到枯燥。"], [32, "阅读这篇文章的过程中，我有几次想要跳过某些段落。"]]}, {"qs": [[33, "我认为文章中的科学知识是可靠的。"], [34, "文章对不确定的内容保持了适度的谨慎，没有过度夸大。"], [35, "文章在传达科学知识的同时，没有让我感到被灌输或强迫接受。"], [36, "文章中有些表述让我对其科学准确性产生了疑虑。"]]}, {"qs": [[37, "阅读后，我对该主题产生了进一步了解的兴趣。"], [38, "我愿意在未来继续阅读有关这一主题的类似文章。"], [39, "我愿意将这篇文章推荐给与我情况相似的朋友。"], [40, "读完这篇文章后，我觉得没有必要再进一步了解这个话题了。"]]}]}};
+}
+
+// ════════════════════════════════════════════════════════════
+// Formspree submission
+// ════════════════════════════════════════════════════════════
+function buildPayload() {
+  const data = {
+    领域: DOMAIN_CN,
+    参与者编号: state.pid,
+    年龄: state.age,
+    性别: state.gender,
+    年级: state.grade,
+    是否常读科普: state.readHabit,
+    获取渠道: state.channels.join('，'),
+    监护人签字: state.guardianSig,
+    同意日期: state.consentDate,
+  };
+  BASELINES.forEach((bl, r) => {
+    const label = ROUND_LABEL[bl];
+    ['B','C','D'].forEach(part => {
+      const sec = getSections();
+      sec[part].subs.forEach(sub => {
+        sub.qs.forEach(([qn]) => {
+          const key = `${label}_${part}Q${qn}`;
+          data[key] = state.answers[r][part][qn] ?? '';
+        });
+      });
+    });
+  });
+  return data;
+}
+
+async function submitToFormspree() {
+  const statusEl = document.getElementById('submit-status');
+  try {
+    const payload = buildPayload();
+    const resp = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok) {
+      statusEl.innerHTML = '<span style="color:#065f46;font-weight:600">✓ 数据已成功提交！感谢您的参与。</span>';
+    } else {
+      const err = await resp.json();
+      statusEl.innerHTML = `<span style="color:#dc2626">提交失败（${resp.status}），请截图此页面发送给研究员。</span>`;
+      console.error(err);
+    }
+  } catch(e) {
+    statusEl.innerHTML = '<span style="color:#dc2626">网络错误，请检查网络后刷新页面重试，或截图发给研究员。</span>';
+    console.error(e);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// Helpers
+// ════════════════════════════════════════════════════════════
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════════════════════════
+// Init
+// ════════════════════════════════════════════════════════════
+buildAllRoundScreens();
+setProgress(0);
+</script>
+</body>
+</html>
