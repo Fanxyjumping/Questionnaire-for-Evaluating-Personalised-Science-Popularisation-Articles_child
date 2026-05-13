@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>医学科普文章阅读体验调查</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  background: #f4f6fb;
+  color: #1a1a2e;
+  font-size: 16px;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+.app-wrap { max-width: 760px; margin: 0 auto; padding: 0 0 90px; }
+.screen { display: none; }
+.screen.active { display: block; }
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  padding: 28px 24px;
+  margin: 20px 16px;
+}
+.page-header {
+  background: #1e3a8a;
+  color: #fff;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.domain-tag {
+  font-size: 12px;
+  background: rgba(255,255,255,.2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.page-header h1 {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.progress-txt { font-size: 12px; color: #bfdbfe; flex-shrink: 0; }
+.progress-bar-wrap { height: 4px; background: #dbeafe; }
+.progress-bar-fill { height: 100%; background: #3b82f6; transition: width .4s ease; }
+.cover-title { font-size: 26px; font-weight: 800; color: #1e3a8a; margin-bottom: 6px; }
+.cover-sub { font-size: 16px; color: #6b7280; margin-bottom: 24px; }
+.info-box {
+  border-left: 4px solid #3b82f6;
+  background: #eff6ff;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 14px;
+}
+.info-box.warn { border-color: #f59e0b; background: #fffbeb; }
+.info-box h3 { font-size: 14px; font-weight: 700; color: #1d4ed8; margin-bottom: 6px; }
+.info-box.warn h3 { color: #b45309; }
+.info-box p { font-size: 14px; color: #374151; }
+.info-box.warn p { color: #78350f; }
+.consent-line { margin-top: 10px; font-size: 14px; color: #78350f; display: flex; gap: 10px; flex-wrap: wrap; }
+.consent-line label { white-space: nowrap; }
+.consent-line input[type=text] {
+  border: none;
+  border-bottom: 1.5px solid #d97706;
+  background: transparent;
+  flex: 1;
+  min-width: 120px;
+  font-size: 14px;
+  outline: none;
+  color: #1a1a2e;
+}
+.form-group { margin-bottom: 22px; }
+.form-label { display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.req { color: #ef4444; }
+.text-input {
+  width: 100%;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s;
+  background: #fafafa;
+}
+.text-input:focus { border-color: #3b82f6; background: #fff; }
+.radio-grid, .check-grid { display: flex; flex-direction: column; gap: 8px; }
+.radio-opt, .check-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  font-size: 15px;
+}
+.radio-opt:hover, .check-opt:hover { border-color: #93c5fd; background: #eff6ff; }
+.radio-opt input, .check-opt input { accent-color: #3b82f6; width: 18px; height: 18px; flex-shrink:0; }
+.radio-opt.selected, .check-opt.selected { border-color: #3b82f6; background: #eff6ff; }
+.round-banner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #fff;
+  padding: 32px 24px;
+  border-radius: 12px;
+  margin: 20px 16px;
+  text-align: center;
+}
+.round-banner h2 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.round-banner p { font-size: 14px; color: #bfdbfe; }
+.article-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.art-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #d1d5db;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+  transition: all .15s;
+  font-family: inherit;
+}
+.art-tab.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+.art-tab.done { border-color: #10b981; color: #065f46; background: #ecfdf5; }
+.article-panel { display: none; }
+.article-panel.active { display: block; }
+.article-title-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+.art-num {
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.article-title-bar h2 { font-size: 18px; font-weight: 700; color: #111827; line-height: 1.4; }
+.article-body { color: #374151; }
+.article-body p { margin-bottom: 14px; text-align: justify; }
+.article-body h3 { font-size: 16px; font-weight: 700; margin: 20px 0 8px; color: #111; }
+.article-body h4 { font-size: 15px; font-weight: 600; margin: 16px 0 6px; color: #222; }
+.article-body ul, .article-body ol { margin: 0 0 14px 22px; }
+.article-body li { margin-bottom: 4px; }
+.article-body strong { font-weight: 700; }
+.art-nav-row { display: flex; justify-content: space-between; margin-top: 24px; gap: 10px; }
+.read-confirm {
+  background: #ecfdf5;
+  border: 1.5px solid #10b981;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #065f46;
+  font-weight: 600;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+}
+.read-confirm input { accent-color: #10b981; width: 18px; height: 18px; }
+.read-confirm.checked { background: #d1fae5; }
+.timer-box {
+  margin: 0 16px 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1.5px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: #374151;
+}
+.timer-pill {
+  background: #1f2937;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  min-width: 76px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.ref-module { border: 1.5px solid #d1d5db; border-radius: 10px; margin: 20px 16px 0; overflow: hidden; }
+.ref-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #f8fafc;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+.ref-header h3 { font-size: 14px; font-weight: 700; color: #374151; }
+.ref-toggle-btn {
+  font-size: 12px;
+  background: #e0e7ff;
+  color: #3730a3;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ref-body { display: none; border-top: 1px solid #e5e7eb; }
+.ref-body.open { display: block; }
+.ref-art-item { border-bottom: 1px solid #f3f4f6; }
+.ref-art-item:last-child { border-bottom: none; }
+.ref-art-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 18px; cursor: pointer; background: #fff; transition: background .12s; }
+.ref-art-hdr:hover { background: #f9fafb; }
+.ref-art-num { font-size: 11px; font-weight: 700; background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+.ref-art-title { font-size: 14px; font-weight: 600; color: #374151; flex: 1; }
+.ref-art-arrow { color: #9ca3af; font-size: 13px; transition: transform .2s; flex-shrink: 0; }
+.ref-art-arrow.open { transform: rotate(90deg); }
+.ref-art-body { display: none; padding: 4px 18px 16px 18px; background: #fafafa; font-size: 13px; color: #4b5563; line-height: 1.7; }
+.ref-art-body.open { display: block; }
+.ref-art-body p { margin-bottom: 10px; text-align: justify; }
+.ref-art-body h3 { font-size: 14px; font-weight: 700; margin: 12px 0 6px; }
+.ref-art-body h4 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+.ref-art-body ul, .ref-art-body ol { margin: 0 0 10px 18px; }
+.survey-part-label { font-size: 18px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
+.survey-part-desc { font-size: 13px; color: #6b7280; margin-bottom: 24px; font-style: italic; }
+.sub-section { margin-bottom: 28px; }
+.sub-title { font-size: 15px; font-weight: 700; color: #374151; margin-bottom: 4px; padding-left: 10px; border-left: 3px solid #3b82f6; }
+.sub-desc { font-size: 12px; color: #9ca3af; margin-bottom: 14px; padding-left: 13px; }
+.q-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #f3f4f6; }
+.q-item:last-child { border-bottom: none; }
+.q-num { font-size: 12px; font-weight: 700; color: #9ca3af; min-width: 34px; padding-top: 2px; flex-shrink: 0; }
+.q-text { font-size: 14px; color: #1f2937; flex: 1; line-height: 1.6; }
+.q-scale { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.scale-labels { display: flex; justify-content: space-between; font-size: 10px; color: #9ca3af; width: 100%; }
+.scale-btns { display: flex; gap: 4px; }
+.scale-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all .12s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scale-btn:hover { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+.scale-btn.selected { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+.q-item.unanswered .scale-btn { border-color: #fca5a5; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all .15s;
+}
+.btn-primary { background: #1e3a8a; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+.btn-outline { background: #fff; color: #374151; border: 1.5px solid #d1d5db; }
+.btn-outline:hover { border-color: #6b7280; }
+.btn-row { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; margin-top: 24px; }
+.btn-row.center { justify-content: center; }
+.complete-card { text-align: center; padding: 48px 24px; }
+.complete-icon { font-size: 46px; margin-bottom: 16px; }
+.complete-card h2 { font-size: 24px; font-weight: 800; color: #065f46; margin-bottom: 10px; }
+.complete-card p { color: #6b7280; font-size: 15px; }
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1f2937;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 999;
+  transition: transform .3s ease;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+.req-note { font-size: 12px; color: #ef4444; margin-top: 4px; display: none; }
+.req-note.show { display: block; }
+@media (max-width: 560px) {
+  body { font-size: 15px; }
+  .card { margin: 14px 10px; padding: 22px 16px; }
+  .round-banner { margin: 14px 10px; padding: 24px 16px; }
+  .q-item { flex-direction: column; gap: 8px; }
+  .q-scale { align-items: flex-start; width: 100%; }
+  .scale-btns { width: 100%; justify-content: space-between; }
+  .scale-btn { flex: 1; height: 40px; }
+  .timer-box { margin: 0 10px 12px; flex-direction: column; align-items: flex-start; }
+  .btn { width: 100%; }
+  .art-nav-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="page-header" id="pageHeader">
+  <span class="domain-tag">医学</span>
+  <h1 id="headerTitle">科普文章阅读体验调查</h1>
+  <span class="progress-txt" id="headerProgress"></span>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+<div class="app-wrap">
+  <div id="s-cover" class="screen active">
+    <div class="card" style="margin-top:30px">
+      <div class="cover-title">科普文章阅读体验调查</div>
+      <div class="cover-sub">医学领域</div>
+      <div class="info-box warn">
+        <h3>监护人同意声明</h3>
+        <p>本问卷面向18周岁以下未成年人。参与前须经监护人知情同意。</p>
+        <div class="consent-line">
+          <label>监护人签字：</label>
+          <input type="text" id="guardianSig" placeholder="请输入监护人姓名">
+          <label>日期：</label>
+          <input type="text" id="consentDate" placeholder="如 2026-05-13">
+        </div>
+      </div>
+      <div class="info-box">
+        <h3>本次任务</h3>
+        <p>您将先阅读 <strong>5 篇</strong>医学领域的科普文章，阅读完成后回答 40 道量表题。</p>
+      </div>
+      <div class="info-box">
+        <h3>评分说明</h3>
+        <p>所有量表题使用 <strong>0-5 分</strong>（0=完全不符合，5=完全符合）。点击对应数字即可选择，可更改。</p>
+      </div>
+      <div class="info-box">
+        <h3>隐私与数据</h3>
+        <p>所有答案仅用于学术研究，严格保密，不与个人身份关联。</p>
+      </div>
+      <div class="btn-row center" style="margin-top:28px">
+        <button class="btn btn-primary" onclick="startPartA()">开始填写 →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-partA" class="screen">
+    <div class="round-banner" style="background:linear-gradient(135deg,#374151,#1f2937)">
+      <h2>A &nbsp;基本信息</h2>
+      <p>以下信息只需填写一次，全程保密</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">参与者编号 <span class="req">*</span></label>
+        <input class="text-input" id="pid" type="text" placeholder="请输入研究员分配给您的编号">
+        <div class="req-note" id="pid-err">请填写参与者编号</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Q01. 您的年龄是？ <span class="req">*</span></label>
+        <input class="text-input" id="a_age" type="number" min="6" max="17" placeholder="请输入年龄（岁）">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Q02. 您的性别是？ <span class="req">*</span></label>
+        <div class="radio-grid" id="rg-gender">
+          <label class="radio-opt"><input type="radio" name="gender" value="男"> 男</label>
+          <label class="radio-opt"><input type="radio" name="gender" value="女"> 女</label>
+          <label class="radio-opt"><input type="radio" name="gender" value="其他"> 其他</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Q03. 您目前就读的年级是？ <span class="req">*</span></label>
+        <div class="radio-grid" id="rg-grade">
+          <label class="radio-opt"><input type="radio" name="grade" value="小学1-3年级"> 小学 1-3 年级</label>
+          <label class="radio-opt"><input type="radio" name="grade" value="小学4-6年级"> 小学 4-6 年级</label>
+          <label class="radio-opt"><input type="radio" name="grade" value="初中"> 初中</label>
+          <label class="radio-opt"><input type="radio" name="grade" value="高中"> 高中</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Q04. 您是否经常阅读科普文章？ <span class="req">*</span></label>
+        <div class="radio-grid" id="rg-read">
+          <label class="radio-opt"><input type="radio" name="read_habit" value="是"> 是</label>
+          <label class="radio-opt"><input type="radio" name="read_habit" value="否"> 否</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Q05. 您主要通过哪些渠道获取科普信息？（可多选）</label>
+        <div class="check-grid">
+          <label class="check-opt"><input type="checkbox" value="图文社交媒体"> 图文社交媒体</label>
+          <label class="check-opt"><input type="checkbox" value="科普书籍"> 科普书籍</label>
+          <label class="check-opt"><input type="checkbox" value="短视频"> 短视频</label>
+          <label class="check-opt"><input type="checkbox" value="课堂/讲座"> 课堂 / 讲座</label>
+          <label class="check-opt"><input type="checkbox" value="其他"> 其他</label>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="submitPartA()">确认，进入阅读 →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dynamic-container"></div>
+
+  <div id="s-done" class="screen">
+    <div class="card complete-card">
+      <div class="complete-icon">完成</div>
+      <h2>全部完成！感谢您的参与</h2>
+      <p style="margin-top:8px">您已完成阅读与答题。</p>
+      <p style="margin-top:20px;font-size:14px;color:#9ca3af">数据正在提交，请稍候……</p>
+      <div id="submit-status" style="margin-top:16px;font-size:14px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DOMAIN = "medicine";
+const DOMAIN_CN = "医学";
+const ARTICLES = [{"title": "疫苗的工作原理是什么，接种疫苗为什么能预防疾病？", "html": "<p>疫苗工作原理是什么？接种疫苗能预防疾病吗？今天，我们就来聊聊疫苗，相信小朋友也有点好奇吧。</p><p>疫苗是一种特殊的生物制剂，它的作用是把经过改造的病菌的“小部分”——比如灭活的病菌、减毒的病毒或者病菌的某些蛋白质——送到我们身体里。我们的身体会把这些“小部分”当成入侵的“坏人”，启动免疫系统来一场“英勇战斗”。战斗胜利后，身体会记住这个“坏人”的特征，下次遇到真正的病菌时，就能迅速识别并消灭它。所以，接种疫苗就像是让身体提前进行一场“模拟演习”，而我们自己就是训练有素的战士。当然，这个“坏人”是经过改造的，它已经失去了致病能力，不会对我们造成伤害。</p><p>那么，为什么接种疫苗能预防疾病呢？这就要说到“免疫”了。简单来说，免疫就是身体保护自己不受病菌侵害的能力。当你接种疫苗后，身体会产生一种叫做“抗体”的物质，以及能记住病菌的“记忆细胞”。这些物质和细胞可以识别和对抗病菌，一旦有病菌真的入侵，它们就会迅速出击，帮助你战胜病菌，保护你的健康。</p><p>最后，关于“不良反应”，其实大家也不用太担心。接种疫苗后出现一些轻微的反应，比如注射部位红肿、轻微发热或疲倦，都是正常的。这些反应是身体在学习如何对抗病菌的表现，说明免疫系统正在积极工作。通常情况下，这些反应会在几天内自行消失，不会影响身体健康。不过，如果出现非常严重的反应（比如高烧不退或呼吸困难），一定要及时告诉爸爸妈妈并去看医生，但这种情况非常罕见。</p>", "index": 6}, {"title": "什么是骨质疏松，为什么老年人更容易发生？", "html": "<p><strong>为什么老年人更容易患骨质疏松？</strong></p><p>想象一下，骨骼就像是房子的墙壁。成年人年轻时，骨骼像刚盖好的房屋一样坚固，拥有充足的“砖块”（骨量）和“钢筋”（骨小梁等结构），非常结实。随着年龄增长，骨重建过程失衡——骨吸收速度超过骨形成速度，导致这些“砖块”和“钢筋”逐渐减少、变得疏松，就像年久失修的房子。当遇到轻微的外力，比如一个不小心绊倒，就可能引发骨折，这就是骨质疏松的典型表现。</p><p>老年人的骨骼就像一个逐渐衰老的房屋，骨量流失加速，骨结构变得脆弱，更容易受到伤害。医生建议中老年人多补充钙和维生素D——钙是骨骼的“砖块”，维生素D则帮助身体吸收钙，就像给房子补砖加固一样，有助于维持骨骼健康。对于高危人群（如绝经后女性或骨密度偏低者），还需要定期进行骨密度检查，就像定期给房子做检测，及时发现和处理问题。这样，即使遇到轻微的外力，骨骼也能更加稳固。</p>", "index": 34}, {"title": "为什么伤口感染会出现红肿热痛？", "html": "<p>有一天，阿布桑在农田里干活时，不小心被一块尖尖的木头扎了一下。伤口立刻流出了鲜红的血，阿布桑又哭又闹，妈妈赶紧找来一块干净的布把伤口包扎起来。可是过了几天，伤口周围的皮肤变红了，还肿了起来，摸上去热热的，一碰就疼。阿布桑妈妈说：“看来伤口感染了，所以才会出现红肿热痛的症状。”阿布桑不理解妈妈说的话，于是妈妈给他讲了个小故事：</p><p>“阿布桑，你知道吗？我们的身体里住着一支‘免疫小军队’。当伤口被细菌入侵时，就像有坏蛋闯进了我们的身体。免疫小军队立刻派出‘白细胞战士’去消灭坏蛋。这些战士在战斗时会释放一些‘信号弹’，让更多的战士赶来帮忙。信号弹会让伤口周围的血管变宽，就像把道路拓宽一样，这样更多的血液和战士就能快速到达战场。血液多了，伤口就变红了；血管里的液体渗出来，伤口就肿了；血液流动加快，摸上去就热热的；而战斗时产生的化学物质会刺激神经，就像有人轻轻戳你一样，所以你会感到疼痛。红肿热痛其实是身体在告诉你：‘别担心，我正在努力保护你！’”</p><p>阿布桑听完，恍然大悟：“原来红肿热痛是身体在帮我打仗啊！”妈妈笑着点点头：“所以我们要好好保护伤口，别让坏蛋有机可乘哦。”</p>", "index": 40}, {"title": "高血压为什么被称为“无声杀手”？", "html": "<p><strong>高血压为什么被称为“无声杀手”？</strong></p><p>在我们生活的世界里，有些健康威胁就像“无声杀手”一样，悄无声息地潜伏着。高血压，这个看似普通的词汇，其实是一种常见的慢性病。它被称为“无声杀手”，是因为在早期阶段，大多数人没有明显的症状，就像一只披着羊皮的狼，让人难以察觉它的存在。</p><p>我们可以把高血压想象成身体里的“水压”太高了。正常血压就像温和的水流，平稳地滋养着全身；而高血压则像一股持续过强的水流，长期冲击着血管壁。虽然血管不像水管那样容易突然破裂，但持续的高压会损伤血管内壁，加速动脉硬化，增加血栓形成的风险，最终可能导致心脏病、中风等严重问题。</p><p>高血压之所以被称为“无声杀手”，是因为它可能持续多年而不引起任何不适。你可能会在不知不觉中，血管和心脏已经承受了过大的压力。就像沉默的敌人，它不会提前发出警报，但后果却可能致命。</p><p>不过，别害怕——高血压是一种可以预防和治疗的慢性病。通过健康的生活方式，比如低盐饮食、规律运动、控制体重和戒烟限酒，我们可以有效降低血压，就像给血管安装了一个“安全阀”。定期测量血压、及早发现异常，更是保护自己的关键。记住，关注健康，从了解高血压开始，你就能成为自己健康的守护者，远离这个“无声杀手”的威胁。</p>", "index": 44}, {"title": "为什么长期压力会损害健康？", "html": "<p><strong>为什么长期压力会损害健康？</strong></p><p>亲爱的朋友们，你们知道吗？压力就像是一股小小的潮水，它可能看起来很轻微，但时间一长就会变得很大。当潮水持续不退时，小岛可能会被淹没；同样，如果压力持续存在（比如连续几周或几个月），也会伤害我们的身体和心灵。</p><p>想象一下，我们的身体是一艘小船，而压力就像是海上的风浪。如果这艘船长时间面对大风大雨，它就可能会破损、倾斜。同样，如果我们的心理长期承受着巨大压力，我们的大脑和身体都会受到伤害。</p><p>长期的压力会影响我们的情绪，让我们感到焦虑、紧张甚至抑郁。它还会削弱我们的免疫系统，使我们更容易生病——当然，生病的原因有很多，压力只是其中之一。就像在炎热的夏天里，如果我们整天待在没有空调的房间里，我们的身体就会变得虚弱，容易生病一样。</p><p>所以，亲爱的小朋友，你们要知道，当我们感到压力很大时，一定要学会放松，寻找快乐的事情去做，比如玩玩具、画画或者听音乐。这样，我们的身体和心灵就能恢复健康，就像潮水退去后，小岛又重新站立起来一样。</p>", "index": 49}];
+const QUESTIONS = {"B": {"title": "B 认知负荷", "desc": "以下问题收集您在阅读这组科普文章过程中及阅读后的感受，请根据实际体验打分。", "subs": [{"id": "B1", "title": "B1 内在适配性", "desc": "考察文章的概念难度与信息量是否与您的认知水平相匹配。", "qs": [[1, "理解这篇文章的主题，我需要付出很多心理努力。"], [2, "这篇文章的整体难度对我来说是合适的。"], [3, "文章的信息量对我来说恰到好处，既不太多也不太少。"], [4, "阅读这篇文章，我获得了不少新的知识收获。"]]}, {"id": "B2", "title": "B2 外在负担控制", "desc": "考察文章在表达、结构、术语等方面是否给您造成了不必要的理解障碍。", "qs": [[5, "为了理解文章中的概念或术语，我需要付出额外的思考或推理。"], [6, "文章的段落结构和逻辑顺序让我容易跟上。"], [7, "文章的语言表达（措辞、句子）让我读起来很顺畅。"], [8, "文章内容简洁凝练，没有冗余或偏题的部分。"]]}, {"id": "B3", "title": "B3 促进性支持", "desc": "考察文章是否通过类比、示例、小结等方式帮助您真正建立对知识的理解。", "qs": [[9, "文章通过有效的组织方式（如类比、示例、小结等）帮助我理解核心知识点。"], [10, "文章提供的解释和例子足以支持我复述其核心内容。"], [11, "文章帮助我对该主题的理解有了明显的深入和增加。"], [12, "文章通过恰当的总结和梳理，使知识点在我脑海中形成了较为清晰的整体印象。"]]}]}, "C": {"title": "C 个性化对齐", "desc": "以下问题考察这组文章是否针对您这类读者进行了恰当的定制。", "subs": [{"id": "C1", "title": "C1 内容相关性", "desc": "考察文章选取的内容侧面是否对您真正有意义。", "qs": [[13, "文章聚焦的科学内容侧面，正是我关心或感兴趣的部分。"], [14, "文章选取的角度和内容对我来说很有实际意义。"], [15, "文章包含了大量我觉得与自己无关的内容。"], [16, "文章涵盖的内容方向与我真正想了解的方向高度吻合。"]]}, {"id": "C2", "title": "C2 知识水平适配", "desc": "考察文章的解释深度和技术细节是否与您的背景相符。", "qs": [[17, "文章的解释深度和难度适合我目前的知识水平。"], [18, "文章对我已经了解的知识花了过多篇幅解释，导致信息层级低于我的预期。"], [19, "文章的信息密度对我来说恰到好处。"], [20, "文章在关键概念上的解释详尽程度让我感到满意。"]]}, {"id": "C3", "title": "C3 风格一致性", "desc": "考察文章的语言风格、语气和表达方式是否符合您的阅读习惯。", "qs": [[21, "文章的语言风格（词汇选择、语气）让我感到亲切自然。"], [22, "文章的组织结构便于我跟随作者的思路。"], [23, "文章的语气让我感到不适（例如过于学术、过于幼稚或过于说教）。"], [24, "文章的整体表达节奏符合我的阅读习惯。"]]}, {"id": "C4", "title": "C4 情境共鸣", "desc": "考察文章的示例和类比是否来自您熟悉的生活情境。", "qs": [[25, "文章中的例子来自我熟悉的日常生活场景。"], [26, "文章使用的类比让我感到亲切，帮助我理解了抽象的概念。"], [27, "文章让我感觉科学知识与我自己的生活有一定关联。"], [28, "文章中的例子或场景对我来说感觉陌生，难以产生代入感。"]]}]}, "D": {"title": "D 读者态度", "desc": "以下问题收集您对这组文章的整体情感与行为倾向。", "subs": [{"id": "D1", "title": "D1 参与吸引力", "desc": "考察文章是否有趣、生动，能够持续吸引您的注意力。", "qs": [[29, "文章的开头很快就吸引了我的注意力。"], [30, "在整个阅读过程中，我始终对文章内容保持好奇心。"], [31, "文章的表达生动有趣，读起来不会感到枯燥。"], [32, "阅读这篇文章的过程中，我有几次想要跳过某些段落。"]]}, {"id": "D2", "title": "D2 信任与可信度", "desc": "考察文章是否给您留下了严谨、可信的印象。", "qs": [[33, "我认为文章中的科学知识是可靠的。"], [34, "文章对不确定的内容保持了适度的谨慎，没有过度夸大。"], [35, "文章在传达科学知识的同时，没有让我感到被灌输或强迫接受。"], [36, "文章中有些表述让我对其科学准确性产生了疑虑。"]]}, {"id": "D3", "title": "D3 持续阅读意愿", "desc": "考察文章是否激发了您进一步了解该主题的意愿。", "qs": [[37, "阅读后，我对该主题产生了进一步了解的兴趣。"], [38, "我愿意在未来继续阅读有关这一主题的类似文章。"], [39, "我愿意将这组文章推荐给与我情况相似的朋友。"], [40, "读完这组文章后，我觉得没有必要再进一步了解这些话题了。"]]}]}};
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xgordeqb";
+const TOTAL_STEPS = 6;
+const MIN_READ_SECONDS = 60;
+
+const state = {
+  pid: "", age: "", gender: "", grade: "", readHabit: "", channels: [],
+  guardianSig: "", consentDate: "",
+  artTab: 0,
+  artRead: [false, false, false, false, false],
+  readStart: 0,
+  timerId: null,
+  timeReady: false,
+  answers: { B: {}, C: {}, D: {} }
+};
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setProgress(step) {
+  const pct = Math.round(step / TOTAL_STEPS * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('headerProgress').textContent = pct + '%';
+}
+
+function setHeaderTitle(title) {
+  document.getElementById('headerTitle').textContent = title;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function startPartA() {
+  const sig = document.getElementById('guardianSig').value.trim();
+  const date = document.getElementById('consentDate').value.trim();
+  if (!sig || !date) {
+    toast('请先填写监护人签字和日期');
+    return;
+  }
+  state.guardianSig = sig;
+  state.consentDate = date;
+  showScreen('s-partA');
+  setHeaderTitle('A 基本信息');
+  setProgress(1);
+}
+
+function submitPartA() {
+  const pid = document.getElementById('pid').value.trim();
+  const age = document.getElementById('a_age').value.trim();
+  const gender = document.querySelector('input[name=gender]:checked');
+  const grade = document.querySelector('input[name=grade]:checked');
+  const readHabit = document.querySelector('input[name=read_habit]:checked');
+  document.getElementById('pid-err').classList.toggle('show', !pid);
+  if (!pid || !age || !gender || !grade || !readHabit) {
+    toast('请完成所有必填基本信息');
+    return;
+  }
+  state.pid = pid;
+  state.age = age;
+  state.gender = gender.value;
+  state.grade = grade.value;
+  state.readHabit = readHabit.value;
+  state.channels = [...document.querySelectorAll('.check-opt input:checked')].map(i => i.value);
+  startReading();
+}
+
+function buildArticleScreen() {
+  const tabs = ARTICLES.map((art, i) => `
+    <button class="art-tab${i===0?' active':''}" id="tab-a${i}" onclick="switchArtTab(${i})">${i+1}</button>
+  `).join('');
+  const panels = ARTICLES.map((art, i) => `
+    <div class="article-panel${i===0?' active':''}" id="panel-a${i}">
+      <div class="article-title-bar">
+        <span class="art-num">第 ${i+1} 篇</span>
+        <h2>${esc(art.title)}</h2>
+      </div>
+      <div class="article-body">${art.html}</div>
+      <label class="read-confirm" id="confirm-a${i}">
+        <input type="checkbox" id="chk-a${i}" onchange="markRead(${i})">
+        我已认真阅读完这篇文章
+      </label>
+      <div class="art-nav-row">
+        ${i>0 ? `<button class="btn btn-outline" onclick="switchArtTab(${i-1})">← 上一篇</button>` : '<span></span>'}
+        ${i<4 ? `<button class="btn btn-primary" onclick="switchArtTab(${i+1})">下一篇 →</button>` : `<button class="btn btn-primary" id="go-survey" onclick="goToSurvey()" disabled>开始答题 →</button>`}
+      </div>
+    </div>
+  `).join('');
+  return `
+    <div id="s-reading" class="screen">
+      <div class="round-banner">
+        <h2>阅读材料</h2>
+        <p>请认真阅读以下 5 篇文章，每篇读完后勾选“我已认真阅读完这篇文章”</p>
+      </div>
+      <div class="timer-box">
+        <span id="timerText">请至少阅读 60 秒，读完全部文章后进入答题。</span>
+        <span class="timer-pill" id="timerPill">01:00</span>
+      </div>
+      <div class="card">
+        <div class="article-nav">${tabs}</div>
+        ${panels}
+      </div>
+    </div>`;
+}
+
+function buildSurveyScreen(part) {
+  const s = QUESTIONS[part];
+  const refItems = ARTICLES.map((art, i) => `
+    <div class="ref-art-item">
+      <div class="ref-art-hdr" onclick="toggleRefArt(this)">
+        <span class="ref-art-num">文章 ${i+1}</span>
+        <span class="ref-art-title">${esc(art.title)}</span>
+        <span class="ref-art-arrow">▶</span>
+      </div>
+      <div class="ref-art-body">${art.html}</div>
+    </div>
+  `).join('');
+  const subHtml = s.subs.map(sub => `
+    <div class="sub-section">
+      <div class="sub-title">${sub.title}</div>
+      <div class="sub-desc">${sub.desc}</div>
+      ${sub.qs.map(([qn, qt]) => `
+        <div class="q-item" id="qi-${part}-${qn}">
+          <span class="q-num">Q${pad2(qn)}</span>
+          <span class="q-text">${esc(qt)}</span>
+          <div class="q-scale">
+            <div class="scale-labels"><span>完全不符合</span><span>完全符合</span></div>
+            <div class="scale-btns">
+              ${[0,1,2,3,4,5].map(v => `<button class="scale-btn" data-part="${part}" data-q="${qn}" data-v="${v}" onclick="selectScale(this)">${v}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  const prev = part === 'B' ? 's-reading' : part === 'C' ? 's-survey-B' : 's-survey-C';
+  const nextBtn = part === 'B'
+    ? `<button class="btn btn-primary" onclick="goToNextPart('B','C')">C 部分 →</button>`
+    : part === 'C'
+      ? `<button class="btn btn-primary" onclick="goToNextPart('C','D')">D 部分 →</button>`
+      : `<button class="btn btn-primary" onclick="finishSurvey()">完成全部，提交答卷 →</button>`;
+  return `
+    <div id="s-survey-${part}" class="screen">
+      <div class="ref-module">
+        <div class="ref-header" onclick="toggleRefPanel(this)">
+          <h3>阅读文章回忆预览（共5篇）</h3>
+          <button class="ref-toggle-btn" onclick="event.stopPropagation();expandAllRef(this)">展开全部</button>
+        </div>
+        <div class="ref-body">${refItems}</div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="survey-part-label">${s.title}</div>
+        <div class="survey-part-desc">${s.desc}</div>
+        ${subHtml}
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="showScreen('${prev}')">← 返回</button>
+          ${nextBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildScreens() {
+  document.getElementById('dynamic-container').innerHTML =
+    buildArticleScreen() + buildSurveyScreen('B') + buildSurveyScreen('C') + buildSurveyScreen('D');
+}
+
+function startReading() {
+  if (!state.readStart) {
+    state.readStart = Date.now();
+    startTimer();
+  }
+  showScreen('s-reading');
+  setHeaderTitle('阅读材料');
+  setProgress(2);
+}
+
+function startTimer() {
+  updateTimer();
+  state.timerId = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  const elapsed = Math.floor((Date.now() - state.readStart) / 1000);
+  const remain = Math.max(0, MIN_READ_SECONDS - elapsed);
+  state.timeReady = remain === 0;
+  document.getElementById('timerPill').textContent = formatTime(remain);
+  document.getElementById('timerText').textContent = state.timeReady
+    ? '已满足最短阅读时间要求。请确认读完全部文章后开始答题。'
+    : '请至少阅读 60 秒，读完全部文章后进入答题。';
+  updateSurveyButton();
+  if (state.timeReady && state.timerId) {
+    clearInterval(state.timerId);
+    state.timerId = null;
+  }
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return pad2(m) + ':' + pad2(s);
+}
+
+function switchArtTab(i) {
+  state.artTab = i;
+  for (let j=0; j<ARTICLES.length; j++) {
+    const tab = document.getElementById(`tab-a${j}`);
+    const panel = document.getElementById(`panel-a${j}`);
+    if (!tab || !panel) continue;
+    tab.className = 'art-tab' + (j===i?' active':'') + (state.artRead[j]?' done':'');
+    panel.classList.toggle('active', j===i);
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function markRead(i) {
+  const chk = document.getElementById(`chk-a${i}`);
+  const confirm = document.getElementById(`confirm-a${i}`);
+  state.artRead[i] = chk.checked;
+  confirm.classList.toggle('checked', chk.checked);
+  const tab = document.getElementById(`tab-a${i}`);
+  if (tab) tab.classList.toggle('done', chk.checked);
+  updateSurveyButton();
+}
+
+function updateSurveyButton() {
+  const btn = document.getElementById('go-survey');
+  if (!btn) return;
+  const allRead = state.artRead.every(Boolean);
+  btn.disabled = !(allRead && state.timeReady);
+  if (!allRead) btn.textContent = '请先确认读完全部文章';
+  else if (!state.timeReady) btn.textContent = '请等待计时结束';
+  else btn.textContent = '开始答题 →';
+}
+
+function goToSurvey() {
+  if (!state.artRead.every(Boolean)) { toast('请先读完并确认所有5篇文章'); return; }
+  if (!state.timeReady) { toast('请满足 60 秒最短阅读时间要求'); return; }
+  showScreen('s-survey-B');
+  setHeaderTitle('B 认知负荷');
+  setProgress(3);
+}
+
+function selectScale(btn) {
+  const part = btn.dataset.part, q = +btn.dataset.q, v = +btn.dataset.v;
+  state.answers[part][q] = v;
+  const qi = document.getElementById(`qi-${part}-${q}`);
+  qi.querySelectorAll('.scale-btn').forEach(b => b.classList.toggle('selected', +b.dataset.v === v));
+  qi.classList.remove('unanswered');
+}
+
+function validatePart(part) {
+  let ok = true;
+  QUESTIONS[part].subs.forEach(sub => {
+    sub.qs.forEach(([qn]) => {
+      const answered = state.answers[part][qn] !== undefined;
+      const qi = document.getElementById(`qi-${part}-${qn}`);
+      if (qi) qi.classList.toggle('unanswered', !answered);
+      if (!answered) ok = false;
+    });
+  });
+  return ok;
+}
+
+function goToNextPart(fromPart, toPart) {
+  if (!validatePart(fromPart)) {
+    toast('请完成本页所有量表题后再继续');
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  showScreen(`s-survey-${toPart}`);
+  setHeaderTitle(QUESTIONS[toPart].title);
+  setProgress(toPart === 'C' ? 4 : 5);
+}
+
+function finishSurvey() {
+  if (!validatePart('D')) {
+    toast('请完成本页所有量表题后再继续');
+    const first = document.querySelector('.q-item.unanswered');
+    if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  showScreen('s-done');
+  setHeaderTitle('提交完成');
+  setProgress(6);
+  submitToFormspree();
+}
+
+function toggleRefPanel(hdr) {
+  const body = hdr.nextElementSibling;
+  body.classList.toggle('open');
+  const btn = hdr.querySelector('.ref-toggle-btn');
+  if (btn) btn.textContent = body.classList.contains('open') ? '收起面板' : '展开全部';
+}
+
+function expandAllRef(btn) {
+  const body = btn.closest('.ref-module').querySelector('.ref-body');
+  const allOpen = [...body.querySelectorAll('.ref-art-body')].every(b => b.classList.contains('open'));
+  body.classList.add('open');
+  body.querySelectorAll('.ref-art-body').forEach(b => b.classList.toggle('open', !allOpen));
+  body.querySelectorAll('.ref-art-arrow').forEach(a => a.classList.toggle('open', !allOpen));
+  btn.textContent = allOpen ? '展开全部' : '收起全部';
+}
+
+function toggleRefArt(hdr) {
+  const body = hdr.nextElementSibling;
+  const arrow = hdr.querySelector('.ref-art-arrow');
+  const open = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+function buildPayload() {
+  const data = {
+    页面版本: 'revised_child_standalone',
+    领域代码: DOMAIN,
+    领域: DOMAIN_CN,
+    参与者编号: state.pid,
+    年龄: state.age,
+    性别: state.gender,
+    年级: state.grade,
+    是否常读科普: state.readHabit,
+    获取渠道: state.channels.join('，'),
+    监护人签字: state.guardianSig,
+    同意日期: state.consentDate,
+    阅读用时秒: Math.floor((Date.now() - state.readStart) / 1000),
+    文章标题: ARTICLES.map((a, i) => `${i+1}.${a.title}`).join(' | ')
+  };
+  ['B','C','D'].forEach(part => {
+    QUESTIONS[part].subs.forEach(sub => {
+      sub.qs.forEach(([qn]) => {
+        data[`${part}Q${pad2(qn)}`] = state.answers[part][qn] ?? '';
+      });
+    });
+  });
+  return data;
+}
+
+async function submitToFormspree() {
+  const statusEl = document.getElementById('submit-status');
+  try {
+    const resp = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(buildPayload())
+    });
+    if (resp.ok) {
+      statusEl.innerHTML = '<span style="color:#065f46;font-weight:600">数据已成功提交！感谢您的参与。</span>';
+    } else {
+      statusEl.innerHTML = `<span style="color:#dc2626">提交失败（${resp.status}），请截图此页面发送给研究员。</span>`;
+    }
+  } catch(e) {
+    statusEl.innerHTML = '<span style="color:#dc2626">网络错误，请检查网络后刷新页面重试，或截图发给研究员。</span>';
+    console.error(e);
+  }
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.querySelectorAll('.radio-opt input, .check-opt input').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const group = inp.closest('.radio-grid, .check-grid');
+    if (inp.type === 'radio') {
+      group.querySelectorAll('.radio-opt').forEach(o => o.classList.remove('selected'));
+      inp.closest('.radio-opt').classList.add('selected');
+    } else {
+      inp.closest('.check-opt').classList.toggle('selected', inp.checked);
+    }
+  });
+});
+
+buildScreens();
+setProgress(0);
+</script>
+</body>
+</html>
